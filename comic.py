@@ -1,4 +1,6 @@
 from openai import OpenAI
+import requests
+
 client = OpenAI()
 
 # Generate the full script for the comic.
@@ -50,6 +52,7 @@ print("\nScript:")
 print(full_script)
 
 # Generate the 3 panels.
+panel_urls = []
 for p in range(1, 4):
     # Generate the script for the panel.
 
@@ -77,9 +80,9 @@ for p in range(1, 4):
         ]
     )
 
-    panel1_script = completion.choices[0].message.content
+    panel_script = completion.choices[0].message.content
     print(f"\nPanel {p} Script:")
-    print(panel1_script)
+    print(panel_script)
 
     # Generate a description of the panel from its script.
 
@@ -92,7 +95,7 @@ for p in range(1, 4):
     panel each character is on.
     """
 
-    prompt = panel1_script
+    prompt = panel_script
 
     # TODO: Handle potential failure here.
     completion = client.chat.completions.create(
@@ -109,16 +112,16 @@ for p in range(1, 4):
         ]
     )
 
-    panel1 = completion.choices[0].message.content
+    panel_description = completion.choices[0].message.content
     print("\nPanel Description:")
-    print(panel1)
+    print(panel_description)
 
     # Draw the panel.
 
     prompt = f"""
     Draw an image in the style of a 1950s golden age comic from the following description:
 
-    {panel1}
+    {panel_description}
     """
 
     # TODO: Handle potential failure here.
@@ -133,3 +136,17 @@ for p in range(1, 4):
     image_url = response.data[0].url
     print(f"\nPanel {p} URL:")
     print(image_url)
+
+    panel_urls.append(image_url)
+
+# Download the panels.
+for index, url in enumerate(panel_urls):
+    p = index + 1
+    response = requests.get(url)
+
+    # Save the image to a file
+    file_name = f"panel_{p}.png"
+    with open(file_name, "wb") as file:
+        file.write(response.content)
+
+    print(f"Saved file to {file_name}")
