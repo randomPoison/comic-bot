@@ -49,85 +49,87 @@ full_script = completion.choices[0].message.content
 print("\nScript:")
 print(full_script)
 
-# Generate a script for panel 1.
+# Generate the 3 panels.
+for p in range(1, 4):
+    # Generate the script for the panel.
 
-system = """
-You will be given the script of a simple 3 panel web comic. From that script
-extract the script for panel 1. Include a description of the setting, each
-character's appearance, their expressions, and their actions. Specify clearly
-which character each piece of dialog is coming from.
-"""
+    system = f"""
+    You will be given the script of a simple 3 panel web comic. From that script
+    extract the script for panel {p}. Include a description of the setting, each
+    character's appearance, their expressions, and their actions. Specify clearly
+    which character each piece of dialog is coming from.
+    """
 
-prompt = full_script
+    prompt = full_script
 
-# TODO: Handle potential failure here.
-completion = client.chat.completions.create(
-    model="gpt-4o-mini",
-    messages=[
-        {
-            "role": "system",
-            "content": system,
-        },
-        {
-            "role": "user",
-            "content": prompt,
-        },
-    ]
-)
+    # TODO: Handle potential failure here.
+    completion = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {
+                "role": "system",
+                "content": system,
+            },
+            {
+                "role": "user",
+                "content": prompt,
+            },
+        ]
+    )
 
-panel1_script = completion.choices[0].message.content
-print("\nPanel 1 Script:")
-print(panel1_script)
+    panel1_script = completion.choices[0].message.content
+    print(f"\nPanel {p} Script:")
+    print(panel1_script)
 
-# Generate a description of the panel from its script.
+    # Generate a description of the panel from its script.
 
-system = """
-You will be given the script of a single panel of 3 panel comic. From that
-script generate a visual description of the panel. Include a brief description
-of the setting, each character's physical appearance, their emotion, and their
-actions. Put the first speaking character on the left side of the panel and the
-second speaking character on the right side. Explicitly note which side of the
-panel each character is on.
-"""
+    system = """
+    You will be given the script of a single panel of 3 panel comic. From that
+    script generate a visual description of the panel. Include a brief description
+    of the setting, each character's physical appearance, their emotion, and their
+    actions. Put the first speaking character on the left side of the panel and the
+    second speaking character on the right side. Explicitly note which side of the
+    panel each character is on.
+    """
 
-prompt = panel1_script
+    prompt = panel1_script
 
-# TODO: Handle potential failure here.
-completion = client.chat.completions.create(
-    model="gpt-4o-mini",
-    messages=[
-        {
-            "role": "system",
-            "content": system,
-        },
-        {
-            "role": "user",
-            "content": prompt,
-        },
-    ]
-)
+    # TODO: Handle potential failure here.
+    completion = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {
+                "role": "system",
+                "content": system,
+            },
+            {
+                "role": "user",
+                "content": prompt,
+            },
+        ]
+    )
 
-panel1 = completion.choices[0].message.content
-print("\nPanel Description:")
-print(panel1)
+    panel1 = completion.choices[0].message.content
+    print("\nPanel Description:")
+    print(panel1)
 
-# Draw the panel.
+    # Draw the panel.
 
-prompt = f"""
-Draw an image in the style of a 1950s golden age comic from the following description:
+    prompt = f"""
+    Draw an image in the style of a 1950s golden age comic from the following description:
 
-{panel1}
-"""
+    {panel1}
+    """
 
-# TODO: Handle potential failure here.
-response = client.images.generate(
-    model="dall-e-3",
-    prompt=prompt,
-    size="1024x1024",
-    quality="standard",
-    n=1,
-)
+    # TODO: Handle potential failure here.
+    response = client.images.generate(
+        model="dall-e-3",
+        prompt=prompt,
+        size="1024x1024",
+        quality="standard",
+        n=1,
+    )
 
-image_url = response.data[0].url
-print("\nPanel 1 URL:")
-print(image_url)
+    image_url = response.data[0].url
+    print(f"\nPanel {p} URL:")
+    print(image_url)
