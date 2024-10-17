@@ -1,4 +1,5 @@
 from openai import OpenAI
+from PIL import Image
 import requests
 
 
@@ -159,11 +160,40 @@ def generate_panels():
 
 
 def construct_comic():
-    pass
+    """
+    Constructs the final comic from the generated panels and parsed chat logs.
+    """
+
+    # Load images for each panel.
+    panel_1 = Image.open('panel_1.png')
+    panel_2 = Image.open('panel_2.png')
+    panel_3 = Image.open('panel_3.png')
+
+    # Define the dimensions of the comic.
+    panel_width = 1024
+    padding = 25
+
+    # Calculate the width and height of the final image
+    # Total width = (width of all images + padding between them and outside padding)
+    total_width = panel_width * 3 + padding * 4
+    total_height = panel_width + padding * 2
+
+    # Create a new blank image with a white background.
+    comic = Image.new('RGB', (total_width, total_height), (255, 255, 255))
+
+    # Paste the images into the new image with the appropriate padding
+    for index, panel in enumerate([panel_1, panel_2, panel_3]):
+        comic.paste(panel, (panel_width * index + padding * (index + 1), padding))
+
+    # Downscale the image by half.
+    comic = comic.resize((round(total_width / 2), round(total_height / 2)))
+
+    # Save the final image.
+    comic.save('comic_strip.png')
 
 
 def main():
-    generate_panels()
+    # generate_panels()
     construct_comic()
 
 
