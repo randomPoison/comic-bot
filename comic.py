@@ -1,10 +1,12 @@
 from openai import OpenAI
 client = OpenAI()
 
+# Generate the full script for the comic.
+
 system = """
-You are a writer for a comic. This comic takes 6 lines of IRC chat and turns
-them into a 3 panel comic with 2 lines of dialog in each panel (either from
-different people or from the same person). Your job is to write a script for the
+You are a writer for a simple web comic. You will be given 6 lines of IRC chat
+that you will turn into a 3 panel comic with 2 lines of dialog in each panel
+(either from different people or from the same person). Write a script for the
 comic based on the logs, describing the following details about the comic:
 
 * The location the comic is set. Describe any details about the location that
@@ -20,8 +22,6 @@ comic based on the logs, describing the following details about the comic:
 """
 
 prompt = """
-Generate a script for a 3 panel comic based on the following IRC logs:
-
 11:26 AM <philza> Muta_work: imo the line never makes you happy
 11:26 AM <@Muta_work> it's a bad line
 11:26 AM <@Muta_work> I refer to it as the bad line
@@ -45,18 +45,20 @@ completion = client.chat.completions.create(
     ]
 )
 
-script = completion.choices[0].message.content
-print("Script:")
-print(script)
+full_script = completion.choices[0].message.content
+print("\nScript:")
+print(full_script)
 
-prompt = f"""
-From the following script for a 3 panel comic, write a description of the first
-panel. Include a description of the setting, each character's appearance, their
-expressions, and their actions. Specify clearly which character each piece of
-dialog is coming from.
+# Generate a script for panel 1.
 
-{script}
+system = """
+You will be given the script of a simple 3 panel web comic. From that script
+extract the script for panel 1. Include a description of the setting, each
+character's appearance, their expressions, and their actions. Specify clearly
+which character each piece of dialog is coming from.
 """
+
+prompt = full_script
 
 # TODO: Handle potential failure here.
 completion = client.chat.completions.create(
@@ -77,12 +79,47 @@ panel1_script = completion.choices[0].message.content
 print("\nPanel 1 Script:")
 print(panel1_script)
 
-prompt = f"""
-Generate a single panel of a comic using the following script:
+# Generate a description of the panel from its script.
 
-{panel1_script}
+system = """
+You will be given the script of a single panel of 3 panel comic. From that
+script generate a visual description of the panel. Include a brief description
+of the setting, each character's physical appearance, their emotion, and their
+actions. Put the first speaking character on the left side of the panel and the
+second speaking character on the right side. Explicitly note which side of the
+panel each character is on.
 """
 
+prompt = panel1_script
+
+# TODO: Handle potential failure here.
+completion = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[
+        {
+            "role": "system",
+            "content": system,
+        },
+        {
+            "role": "user",
+            "content": prompt,
+        },
+    ]
+)
+
+panel1 = completion.choices[0].message.content
+print("\nPanel Description:")
+print(panel1)
+
+# Draw the panel.
+
+prompt = f"""
+Draw an image in the style of a 1950s golden age comic from the following description:
+
+{panel1}
+"""
+
+# TODO: Handle potential failure here.
 response = client.images.generate(
     model="dall-e-3",
     prompt=prompt,
