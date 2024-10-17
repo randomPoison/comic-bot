@@ -30,6 +30,7 @@ Generate a script for a 3 panel comic based on the following IRC logs:
 11:27 AM <skalnik> is down good or bad
 """
 
+# TODO: Handle potential failure here.
 completion = client.chat.completions.create(
     model="gpt-4o-mini",
     messages=[
@@ -44,7 +45,6 @@ completion = client.chat.completions.create(
     ]
 )
 
-# TODO: Handle potential failure here.
 script = completion.choices[0].message.content
 print("Script:")
 print(script)
@@ -58,6 +58,7 @@ dialog is coming from.
 {script}
 """
 
+# TODO: Handle potential failure here.
 completion = client.chat.completions.create(
     model="gpt-4o-mini",
     messages=[
@@ -75,3 +76,21 @@ completion = client.chat.completions.create(
 panel1_script = completion.choices[0].message.content
 print("\nPanel 1 Script:")
 print(panel1_script)
+
+prompt = f"""
+Generate a single panel of a comic using the following script:
+
+{panel1_script}
+"""
+
+response = client.images.generate(
+    model="dall-e-3",
+    prompt=prompt,
+    size="1024x1024",
+    quality="standard",
+    n=1,
+)
+
+image_url = response.data[0].url
+print("\nPanel 1 URL:")
+print(image_url)
