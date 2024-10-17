@@ -3,14 +3,14 @@ from PIL import Image
 import requests
 
 
-def generate_panels():
+def generate_panels(chat_script):
     """
     Generates 3 comic panels based on 6 IRC logs.
     """
 
     client = OpenAI()
 
-    # Generate the full script for the comic.
+    # Generate the full script for the comic from the initial chat logs.
 
     system = """
     You are a writer for a simple web comic. You will be given 6 lines of IRC chat
@@ -30,14 +30,7 @@ def generate_panels():
     of the original IRC log.
     """
 
-    prompt = """
-    11:26 AM <philza> Muta_work: imo the line never makes you happy
-    11:26 AM <@Muta_work> it's a bad line
-    11:26 AM <@Muta_work> I refer to it as the bad line
-    11:26 AM <@Muta_work> no good comes from this line
-    11:26 AM <@Muta_work> also, i have like, six different lines, and they are all going down
-    11:27 AM <skalnik> is down good or bad
-    """
+    prompt = chat_script
 
     # TODO: Handle potential failure here.
     completion = client.chat.completions.create(
@@ -193,8 +186,17 @@ def construct_comic():
 
 
 def main():
-    # generate_panels()
-    construct_comic()
+    chat_script = """
+    11:26 AM <philza> Muta_work: imo the line never makes you happy
+    11:26 AM <@Muta_work> it's a bad line
+    11:26 AM <@Muta_work> I refer to it as the bad line
+    11:26 AM <@Muta_work> no good comes from this line
+    11:26 AM <@Muta_work> also, i have like, six different lines, and they are all going down
+    11:27 AM <skalnik> is down good or bad
+    """
+
+    # generate_panels(chat_script)
+    construct_comic(chat_script)
 
 
 if __name__ == "__main__":
