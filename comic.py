@@ -192,7 +192,7 @@ def construct_comic(chat_script):
     dialog_lines = [line.strip().split(' ', 2)[2] for line in lines]
 
     # Setup comic for having text drawn into it.
-    font = ImageFont.truetype("FiraCode-Bold.ttf", 42)
+    font = ImageFont.truetype("FiraCode-Bold.ttf", 38)
     draw = ImageDraw.Draw(comic)
 
     # Iterate over the panels and add the dialog.
@@ -202,11 +202,26 @@ def construct_comic(chat_script):
 
         # Calculate positions for the first line (top-left corner).
         first_line_position = (i * panel_width + padding, padding)
+        _, _, width, height = font.getbbox(first_line)
+
+        # Draw rectangle behind the first line.
+        first_line_rect = [
+            first_line_position,
+            (first_line_position[0] + width, first_line_position[1] + height),
+        ]
+        draw.rectangle(first_line_rect, fill=(255, 255, 255))
 
         # Calculate positions for the second line (right-aligned).
-        text_width = draw.textlength(second_line, font=font)
+        _, _, width, height = font.getbbox(second_line)
         second_line_position = (
-            i * panel_width + panel_width - text_width - padding, padding + line_height)
+            i * panel_width + panel_width - width - padding, padding + line_height)
+
+        # Draw rectangle behind the second line.
+        second_line_rect = [
+            second_line_position,
+            (second_line_position[0] + width, second_line_position[1] + height)
+        ]
+        draw.rectangle(second_line_rect, fill=(255, 255, 255))
 
         # Draw the two lines of text
         draw.text(first_line_position, first_line,
