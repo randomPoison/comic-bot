@@ -189,7 +189,7 @@ def construct_comic(chat_script):
     # the time prefix from each line (assume the time format is always `hh:mm
     # AM/PM `).
     lines = chat_script.strip().split("\n")
-    dialog_lines = [line.split(' ', 2)[2] for line in lines]
+    dialog_lines = [line.strip().split(' ', 2)[2] for line in lines]
 
     # Setup comic for having text drawn into it.
     font = ImageFont.truetype("FiraCode-Bold.ttf", 42)
