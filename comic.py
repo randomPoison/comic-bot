@@ -201,7 +201,7 @@ def construct_comic(chat_script):
         second_line = dialog_lines[2 * i + 1]
 
         # Calculate positions for the first line (top-left corner).
-        first_line_position = (i * panel_width + padding, padding)
+        first_line_position = (i * panel_width + padding * (i + 1), padding)
         _, _, width, height = font.getbbox(first_line)
 
         # Draw rectangle behind the first line.
@@ -212,9 +212,10 @@ def construct_comic(chat_script):
         draw.rectangle(first_line_rect, fill=(255, 255, 255))
 
         # Calculate positions for the second line (right-aligned).
+        right_edge = (i + 1) * (panel_width + padding)
         _, _, width, height = font.getbbox(second_line)
         second_line_position = (
-            i * panel_width + panel_width - width - padding, padding + line_height)
+            right_edge - width, padding + line_height)
 
         # Draw rectangle behind the second line.
         second_line_rect = [
@@ -223,7 +224,7 @@ def construct_comic(chat_script):
         ]
         draw.rectangle(second_line_rect, fill=(255, 255, 255))
 
-        # Draw the two lines of text
+        # Draw the two lines of text.
         draw.text(first_line_position, first_line,
                   font=font, fill=(0, 0, 0), )  # Black color
         draw.text(second_line_position, second_line,
