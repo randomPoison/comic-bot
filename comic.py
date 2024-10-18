@@ -1,5 +1,5 @@
 from openai import OpenAI
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 import requests
 
 
@@ -152,10 +152,13 @@ def generate_panels(chat_script):
         print(f"Saved file to {file_name}")
 
 
-def construct_comic():
+def construct_comic(chat_script):
     """
     Constructs the final comic from the generated panels and parsed chat logs.
     """
+
+    # Combine the 3 panels into a single image.
+    # -----------------------------------------
 
     # Load images for each panel.
     panel_1 = Image.open('panel_1.png')
@@ -165,9 +168,9 @@ def construct_comic():
     # Define the dimensions of the comic.
     panel_width = 1024
     padding = 25
+    line_height = 100
 
     # Calculate the width and height of the final image
-    # Total width = (width of all images + padding between them and outside padding)
     total_width = panel_width * 3 + padding * 4
     total_height = panel_width + padding * 2
 
@@ -176,12 +179,43 @@ def construct_comic():
 
     # Paste the images into the new image with the appropriate padding
     for index, panel in enumerate([panel_1, panel_2, panel_3]):
-        comic.paste(panel, (panel_width * index + padding * (index + 1), padding))
+        offset = panel_width * index + padding * (index + 1)
+        comic.paste(panel, (offset, padding))
 
-    # Downscale the image by half.
-    comic = comic.resize((round(total_width / 2), round(total_height / 2)))
+    # Add lines of dialog to the comic.
+    # ---------------------------------
 
-    # Save the final image.
+    # Process the raw chat logs into a list of lines of dialog, stripping off
+    # the time prefix from each line (assume the time format is always `hh:mm
+    # AM/PM `).
+    lines = chat_script.strip().split("\n")
+    dialog_lines = [line.split(' ', 2)[2] for line in lines]
+
+    # Setup comic for having text drawn into it.
+    font = ImageFont.truetype("FiraCode-Bold.ttf", 42)
+    draw = ImageDraw.Draw(comic)
+
+    # Iterate over the panels and add the dialog.
+    for i in range(3):
+        first_line = dialog_lines[2 * i]
+        second_line = dialog_lines[2 * i + 1]
+
+        # Calculate positions for the first line (top-left corner).
+        first_line_position = (i * panel_width + padding, padding)
+
+        # Calculate positions for the second line (right-aligned).
+        text_width = draw.textlength(second_line, font=font)
+        second_line_position = (
+            i * panel_width + panel_width - text_width - padding, padding + line_height)
+
+        # Draw the two lines of text
+        draw.text(first_line_position, first_line,
+                  font=font, fill=(0, 0, 0), )  # Black color
+        draw.text(second_line_position, second_line,
+                  font=font, fill=(0, 0, 0))  # Black color
+
+    # Downscale the image by half and save it to disk.
+    comic = comic.resize((total_width // 2, total_height // 2))
     comic.save('comic_strip.png')
 
 
