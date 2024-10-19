@@ -200,6 +200,10 @@ def construct_comic(chat_script):
         first_line = dialog_lines[2 * i]
         second_line = dialog_lines[2 * i + 1]
 
+        # Wrap lines of dialog within a max width.
+        first_lines = wrap_text(first_line, font, 900, draw)
+        second_lines = wrap_text(second_line, font, 900, draw)
+
         # Calculate positions for the first line (top-left corner).
         first_line_position = (i * panel_width + padding * (i + 1), padding)
         _, _, width, height = font.getbbox(first_line)
@@ -234,6 +238,35 @@ def construct_comic(chat_script):
     comic = comic.resize((total_width // 2, total_height // 2))
     comic.save('comic_strip.png')
 
+
+def wrap_text(text, font, max_width, draw):
+    """
+    Wrap text to fit within a specified width.
+
+    :param text: The text to be wrapped.
+    :param font: The font used to measure the text size.
+    :param max_width: The maximum width allowed for each line.
+    :param draw: The ImageDraw object used to measure text size.
+    :return: A list of wrapped lines.
+    """
+    words = text.split(' ')
+    wrapped_lines = []
+    current_line = ""
+
+    for word in words:
+        test_line = current_line + (word + " ")
+        text_width = draw.textlength(test_line, font=font)
+
+        if text_width <= max_width:
+            current_line = test_line
+        else:
+            wrapped_lines.append(current_line)
+            current_line = word + " "
+
+    if current_line:
+        wrapped_lines.append(current_line)
+
+    return wrapped_lines
 
 def main():
     chat_script = """
