@@ -201,38 +201,42 @@ def construct_comic(chat_script):
         second_line = dialog_lines[2 * i + 1]
 
         # Wrap lines of dialog within a max width.
-        first_lines = wrap_text(first_line, font, 900, draw)
-        second_lines = wrap_text(second_line, font, 900, draw)
+        first_line = wrap_text(first_line, font, 900, draw)
+        second_line = wrap_text(second_line, font, 900, draw)
 
         # Calculate positions for the first line (top-left corner).
         first_line_position = (i * panel_width + padding * (i + 1), padding)
-        _, _, width, height = font.getbbox(first_line)
+        _, _, width, first_height = draw.multiline_textbbox(
+            [0, 0], first_line, font=font)
 
         # Draw rectangle behind the first line.
         first_line_rect = [
             first_line_position,
-            (first_line_position[0] + width, first_line_position[1] + height),
+            (first_line_position[0] + width,
+             first_line_position[1] + first_height),
         ]
         draw.rectangle(first_line_rect, fill=(255, 255, 255))
 
         # Calculate positions for the second line (right-aligned).
         right_edge = (i + 1) * (panel_width + padding)
-        _, _, width, height = font.getbbox(second_line)
+        _, _, width, second_height = draw.multiline_textbbox(
+            [0, 0], second_line, font=font)
         second_line_position = (
-            right_edge - width, padding + line_height)
+            right_edge - width, 2 * padding + first_height)
 
         # Draw rectangle behind the second line.
         second_line_rect = [
             second_line_position,
-            (second_line_position[0] + width, second_line_position[1] + height)
+            (second_line_position[0] + width,
+             second_line_position[1] + second_height)
         ]
         draw.rectangle(second_line_rect, fill=(255, 255, 255))
 
         # Draw the two lines of text.
-        draw.text(first_line_position, first_line,
-                  font=font, fill=(0, 0, 0), )  # Black color
-        draw.text(second_line_position, second_line,
-                  font=font, fill=(0, 0, 0))  # Black color
+        draw.multiline_text(first_line_position, first_line,
+                            font=font, fill=(0, 0, 0), )  # Black color
+        draw.multiline_text(second_line_position, second_line,
+                            font=font, fill=(0, 0, 0))  # Black color
 
     # Downscale the image by half and save it to disk.
     comic = comic.resize((total_width // 2, total_height // 2))
@@ -266,7 +270,8 @@ def wrap_text(text, font, max_width, draw):
     if current_line:
         wrapped_lines.append(current_line)
 
-    return wrapped_lines
+    return "\n".join(wrapped_lines)
+
 
 def main():
     chat_script = """
