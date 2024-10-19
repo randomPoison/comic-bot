@@ -168,7 +168,6 @@ def construct_comic(chat_script):
     # Define the dimensions of the comic.
     panel_width = 1024
     padding = 25
-    line_height = 100
 
     # Calculate the width and height of the final image
     total_width = panel_width * 3 + padding * 4
@@ -186,8 +185,7 @@ def construct_comic(chat_script):
     # ---------------------------------
 
     # Process the raw chat logs into a list of lines of dialog, stripping off
-    # the time prefix from each line (assume the time format is always `hh:mm
-    # AM/PM `).
+    # the time prefix from each line (assume the time format is always `hh:mm AM/PM `).
     lines = chat_script.strip().split("\n")
     dialog_lines = [line.strip().split(' ', 2)[2] for line in lines]
 
@@ -204,43 +202,57 @@ def construct_comic(chat_script):
         first_line = wrap_text(first_line, font, 900, draw)
         second_line = wrap_text(second_line, font, 900, draw)
 
-        # Calculate positions for the first line (top-left corner).
-        first_line_position = (i * panel_width + padding * (i + 1), padding)
-        _, _, width, first_height = draw.multiline_textbbox(
-            [0, 0], first_line, font=font)
+        # Calculate anchors for the text boxes.
+        left_edge = i * panel_width + padding * (i + 1)
+        right_edge = left_edge + panel_width
 
-        # Draw rectangle behind the first line.
-        first_line_rect = [
-            first_line_position,
-            (first_line_position[0] + width,
-             first_line_position[1] + first_height),
-        ]
-        draw.rectangle(first_line_rect, fill=(255, 255, 255))
+        # Draw the first text box (left-aligned).
+        first_line_position = (left_edge, padding)
+        _, first_text_height = draw_text_box(
+            draw, first_line, font, first_line_position, padding=10
+        )
 
-        # Calculate positions for the second line (right-aligned).
-        right_edge = (i + 1) * (panel_width + padding)
-        _, _, width, second_height = draw.multiline_textbbox(
-            [0, 0], second_line, font=font)
+        # Draw the second text box (right-aligned).
+        _, _, text_width, _ = draw.multiline_textbbox(
+            (0, 0), second_line, font=font)
         second_line_position = (
-            right_edge - width, 2 * padding + first_height)
-
-        # Draw rectangle behind the second line.
-        second_line_rect = [
-            second_line_position,
-            (second_line_position[0] + width,
-             second_line_position[1] + second_height)
-        ]
-        draw.rectangle(second_line_rect, fill=(255, 255, 255))
-
-        # Draw the two lines of text.
-        draw.multiline_text(first_line_position, first_line,
-                            font=font, fill=(0, 0, 0), )  # Black color
-        draw.multiline_text(second_line_position, second_line,
-                            font=font, fill=(0, 0, 0))  # Black color
+            right_edge - text_width, first_line_position[1] + first_text_height + padding)
+        draw_text_box(
+            draw, second_line, font, second_line_position, padding=10)
 
     # Downscale the image by half and save it to disk.
     comic = comic.resize((total_width // 2, total_height // 2))
     comic.save('comic_strip.png')
+
+
+def draw_text_box(draw, text, font, position, padding=0):
+    """
+    Draws text on an image with a background rectangle.
+
+    :param draw: ImageDraw object.
+    :param text: The text to draw (should be already wrapped).
+    :param font: The font to use.
+    :param position: Tuple (x, y) for the top-left position.
+    :param padding: Padding inside the rectangle.
+    :return: width and height of the drawn text box (including padding)
+    """
+    # Calculate the text bounding box.
+    _, _, text_width, text_height = draw.multiline_textbbox(
+        (0, 0), text, font=font)
+
+    # Adjust rectangle for padding.
+    rect_start = (position[0] - padding, position[1] - padding)
+    rect_end = (position[0] + text_width + padding,
+                position[1] + text_height + padding)
+
+    # Draw the text box and text.
+    draw.rectangle([rect_start, rect_end], fill=(255, 255, 255))
+    draw.multiline_text(position, text, font=font, fill=(0, 0, 0))
+
+    # Return the size of the text box including padding.
+    total_width = text_width + 2 * padding
+    total_height = text_height + 2 * padding
+    return total_width, total_height
 
 
 def wrap_text(text, font, max_width, draw):
@@ -264,11 +276,11 @@ def wrap_text(text, font, max_width, draw):
         if text_width <= max_width:
             current_line = test_line
         else:
-            wrapped_lines.append(current_line)
+            wrapped_lines.append(current_line.strip())
             current_line = word + " "
 
     if current_line:
-        wrapped_lines.append(current_line)
+        wrapped_lines.append(current_line.strip())
 
     return "\n".join(wrapped_lines)
 
