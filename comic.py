@@ -10,64 +10,47 @@ def generate_panels(chat_script):
 
     client = OpenAI()
 
-    # Generate the full script for the comic from the initial chat logs.
-
-    system = """
-    You are a writer for a simple web comic. You will be given 6 lines of IRC chat
-    that you will turn into a 3 panel comic with 2 lines of dialog in each panel
-    (either from different people or from the same person). Write a script for the
-    comic based on the logs, describing the following details about the comic:
-
-    * The location the comic is set. Describe any details about the location that
-    are relevant for the comic such as specific object that need to be in the
-    scene.
-    * Any specific clothing or visual modifiers for the characters, e.g. if the
-    comic is set in a kitchen one character may be wearing an apron.
-    * The emotional expressions and actions of each of the characters in each panel.
-    The characters should act and emote properly based on the context of the
-    conversion and their lines of dialog.
-    * The dialog for each character in each panel. Dialogue should be the exact text
-    of the original IRC log.
-    """
-
-    prompt = chat_script
-
-    # TODO: Handle potential failure here.
-    completion = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {
-                "role": "system",
-                "content": system,
-            },
-            {
-                "role": "user",
-                "content": prompt,
-            },
-        ]
-    )
-
-    full_script = completion.choices[0].message.content
-    print("\nScript:")
-    print(full_script)
-
     # Generate the 3 panels.
     panel_urls = []
     for p in range(1, 4):
-        # Generate the script for the panel.
-
         system = f"""
-        You will be given the script of a simple 3 panel web comic. From that script
-        extract the script for panel {p}. Include a description of the setting, each
-        character's appearance, their expressions, and their actions. Specify clearly
-        which character each piece of dialog is coming from.
+        You will be given the description of two characters. Write a short
+        description of a scene with the two characters. The characters should be
+        explicitly placed on the left and right side of the image, with the
+        first character on the left and the second character on the right.
+
+        Keep the generated description short and to the point. Avoid using
+        superfluous descriptors, and keep character descriptions as close to
+        their original descrption. Do not mention the characters' names, only
+        reference them by their visual descriptions.
+
+        example input:
+
+        ```
+        - **alice**: A talking toaster with a cartoon face on her side.
+
+        - **bob**. A cat wearing a cat t-shirt.
+        ```
+
+        example output:
+
+        ```
+        On the left stands a large cartoon toaster with a large, expressive
+        face on her side. To her right sits a large black cat wearing a t-shirt
+        that depicts a cat. The two are engaged in a casual conversation.
+        ```
         """
 
-        prompt = full_script
+        prompt = """
+        - **shadypkg**: A tall, buff man with a cardboard box on his head.
+
+        - **geckomuerto**. An anthropomorphic lizard wearing a business suit and
+          smoking a cigarette.
+        """
 
         # TODO: Handle potential failure here.
         completion = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="gpt-4o",
             messages=[
                 {
                     "role": "system",
@@ -80,54 +63,27 @@ def generate_panels(chat_script):
             ]
         )
 
-        panel_script = completion.choices[0].message.content
-        print(f"\nPanel {p} Script:")
-        print(panel_script)
+        character_descriptions = completion.choices[0].message.content
+        print(f"\nPanel {p} character descriptions:")
+        print(character_descriptions)
 
-        # Generate a description of the panel from its script.
+        panel_description = f"""
+        The scene is set in a cozy living room infused with a warm afternoon
+        glow. Sunlight filters through a window, washings the space in golden
+        hues, illuminating the assorted clutter on a low coffee table in the
+        center.
 
-        system = """
-        You will be given the script of a single panel of 3 panel comic. From that
-        script generate a visual description of the panel. Include a brief description
-        of the setting, each character's physical appearance, their emotion, and their
-        actions. Put the first speaking character on the left side of the panel and the
-        second speaking character on the right side. Explicitly note which side of the
-        panel each character is on.
+        {character_descriptions}
         """
-
-        prompt = panel_script
-
-        # TODO: Handle potential failure here.
-        completion = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {
-                    "role": "system",
-                    "content": system,
-                },
-                {
-                    "role": "user",
-                    "content": prompt,
-                },
-            ]
-        )
-
-        panel_description = completion.choices[0].message.content
-        print("\nPanel Description:")
-        print(panel_description)
 
         # Draw the panel.
-
-        prompt = f"""
-        Draw an image in the style of a 1950s golden age comic from the following description:
-
-        {panel_description}
-        """
+        # ---------------
+        print(f"\nFinal panel {p} prompt:\n{panel_description}")
 
         # TODO: Handle potential failure here.
         response = client.images.generate(
             model="dall-e-3",
-            prompt=prompt,
+            prompt=panel_description,
             size="1024x1024",
             quality="standard",
             n=1,
@@ -287,15 +243,15 @@ def wrap_text(text, font, max_width, draw):
 
 def main():
     chat_script = """
-    11:26 AM <philza> Muta_work: imo the line never makes you happy
-    11:26 AM <@Muta_work> it's a bad line
-    11:26 AM <@Muta_work> I refer to it as the bad line
-    11:26 AM <@Muta_work> no good comes from this line
-    11:26 AM <@Muta_work> also, i have like, six different lines, and they are all going down
-    11:27 AM <skalnik> is down good or bad
+    2:15 PM <shadypkg> Wut time you thonkin?
+    2:16 PM <geckomuerto> in like 3 or 4 hours, gotta do some chores
+    2:16 PM <geckomuerto> maybe eat today idk
+    2:17 PM <shadypkg> I got something you can eat right now
+    2:17 PM <shadypkg> Come over, I'll feed you
+    2:18 PM <shadypkg> I have a variety of meats on the menu
     """
 
-    # generate_panels(chat_script)
+    generate_panels(chat_script)
     construct_comic(chat_script)
 
 
