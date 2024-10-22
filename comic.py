@@ -6,6 +6,7 @@ import requests
 CHARACTER_DESCRIPTIONS = {
     "geckomuerto": "An anthropomorphic lizard wearing a business suit and smoking a cigarette.",
     "shadypkg": "A tall, buff, shirtless man with a cardboard box on his head.",
+    "philza": "A rockstar with sunglasses and long blonde hair, holding a black and white guitar.",
 }
 
 
@@ -285,12 +286,12 @@ def wrap_text(text, font, max_width, draw):
 
 def main():
     chat_script = """
-    2:15 PM <shadypkg> Wut time you thonkin?
-    2:16 PM <geckomuerto> in like 3 or 4 hours, gotta do some chores
-    2:16 PM <geckomuerto> maybe eat today idk
-    2:17 PM <shadypkg> I got something you can eat right now
-    2:17 PM <shadypkg> Come over, I'll feed you
-    2:18 PM <shadypkg> I have a variety of meats on the menu
+    4:06 PM <geckomuerto> gonna hafta make pasta for weeks so i can start collecting jars for paper pulp
+    4:07 PM <geckomuerto> processed four jars today
+    4:18 PM <philza> what do these things have to do with each other
+    4:18 PM <geckomuerto> sauce jars are used to hold paper and water to stir into pulp slurry! the slurry is then used to make new paper
+    4:19 PM <philza> love shady changing outfits in every panel. ai is so goooood
+    4:19 PM <philza> geckomuerto: i see, i thought you needed the jars but they were full of pasta rofl
     """
 
     # Process the raw chat logs into a list of lines of dialog, stripping off
