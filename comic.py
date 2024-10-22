@@ -2,7 +2,8 @@ from openai import OpenAI
 from PIL import Image, ImageDraw, ImageFont
 import requests
 
-character_descriptions = {
+
+CHARACTER_DESCRIPTIONS = {
     "geckomuerto": "An anthropomorphic lizard wearing a business suit and smoking a cigarette.",
     "shadypkg": "A tall, buff man with a cardboard box on his head.",
 }
@@ -18,6 +19,14 @@ def generate_panels(dialog_lines, speakers):
     # Generate the 3 panels.
     for i in range(3):
         p = i + 1
+
+        # Determine our speakers for this panel.
+        panel_speakers = [speakers[2 * i], speakers[2 * i + 1]]
+        speakers_prompt = f"""
+        - **{panel_speakers[0]}**: {CHARACTER_DESCRIPTIONS[panel_speakers[0]]}
+
+        - **{panel_speakers[1]}**: {CHARACTER_DESCRIPTIONS[panel_speakers[1]]}
+        """
 
         system = f"""
         You will be given the description of two characters. Write a short
@@ -47,12 +56,6 @@ def generate_panels(dialog_lines, speakers):
         ```
         """
 
-        prompt = """
-        - **shadypkg**: <description>
-
-        - **geckomuerto**: <description>
-        """
-
         # TODO: Handle potential failure here.
         completion = client.chat.completions.create(
             model="gpt-4o",
@@ -63,14 +66,14 @@ def generate_panels(dialog_lines, speakers):
                 },
                 {
                     "role": "user",
-                    "content": prompt,
+                    "content": speakers_prompt,
                 },
             ]
         )
 
-        character_descriptions = completion.choices[0].message.content
+        combined_description = completion.choices[0].message.content
         print(f"\nPanel {p} character descriptions:")
-        print(character_descriptions)
+        print(combined_description)
 
         panel_description = f"""
         The scene is set in a cozy living room infused with a warm afternoon
@@ -78,7 +81,7 @@ def generate_panels(dialog_lines, speakers):
         hues, illuminating the assorted clutter on a low coffee table in the
         center.
 
-        {character_descriptions}
+        {combined_description}
         """
 
         # Draw the panel.
@@ -95,8 +98,7 @@ def generate_panels(dialog_lines, speakers):
         )
 
         image_url = response.data[0].url
-        print(f"\nPanel {p} URL:")
-        print(image_url)
+        print(f"\nPanel {p} URL: {image_url}")
 
         # Download the panel.
         response = requests.get(image_url)
