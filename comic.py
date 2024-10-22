@@ -5,7 +5,7 @@ import requests
 
 CHARACTER_DESCRIPTIONS = {
     "geckomuerto": "An anthropomorphic lizard wearing a business suit and smoking a cigarette.",
-    "shadypkg": "A tall, buff man with a cardboard box on his head.",
+    "shadypkg": "A tall, buff, shirtless man with a cardboard box on his head.",
 }
 
 
