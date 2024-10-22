@@ -2,8 +2,13 @@ from openai import OpenAI
 from PIL import Image, ImageDraw, ImageFont
 import requests
 
+character_descriptions = {
+    "geckomuerto": "An anthropomorphic lizard wearing a business suit and smoking a cigarette.",
+    "shadypkg": "A tall, buff man with a cardboard box on his head.",
+}
 
-def generate_panels(chat_script):
+
+def generate_panels(dialog_lines, speakers):
     """
     Generates 3 comic panels based on 6 IRC logs.
     """
@@ -11,7 +16,9 @@ def generate_panels(chat_script):
     client = OpenAI()
 
     # Generate the 3 panels.
-    for p in range(1, 4):
+    for i in range(3):
+        p = i + 1
+
         system = f"""
         You will be given the description of two characters. Write a short
         description of a scene with the two characters. The characters should be
@@ -28,7 +35,7 @@ def generate_panels(chat_script):
         ```
         - **alice**: A talking toaster with a cartoon face on her side.
 
-        - **bob**. A cat wearing a cat t-shirt.
+        - **bob**: A cat wearing a cat t-shirt.
         ```
 
         example output:
@@ -41,10 +48,9 @@ def generate_panels(chat_script):
         """
 
         prompt = """
-        - **shadypkg**: A tall, buff man with a cardboard box on his head.
+        - **shadypkg**: <description>
 
-        - **geckomuerto**. An anthropomorphic lizard wearing a business suit and
-          smoking a cigarette.
+        - **geckomuerto**: <description>
         """
 
         # TODO: Handle potential failure here.
@@ -101,7 +107,7 @@ def generate_panels(chat_script):
         print(f"Saved file to {file_name}")
 
 
-def construct_comic(chat_script):
+def construct_comic(dialog_lines):
     """
     Constructs the final comic from the generated panels and parsed chat logs.
     """
@@ -132,11 +138,6 @@ def construct_comic(chat_script):
 
     # Add lines of dialog to the comic.
     # ---------------------------------
-
-    # Process the raw chat logs into a list of lines of dialog, stripping off
-    # the time prefix from each line (assume the time format is always `hh:mm AM/PM `).
-    lines = chat_script.strip().split("\n")
-    dialog_lines = [line.strip().split(' ', 2)[2] for line in lines]
 
     # Setup comic for having text drawn into it.
     font = ImageFont.truetype("FiraCode-Bold.ttf", 38)
@@ -244,8 +245,16 @@ def main():
     2:18 PM <shadypkg> I have a variety of meats on the menu
     """
 
-    generate_panels(chat_script)
-    construct_comic(chat_script)
+    # Process the raw chat logs into a list of lines of dialog, stripping off
+    # the time prefix from each line (assume the time format is always `hh:mm AM/PM `).
+    lines = chat_script.strip().split("\n")
+    dialog_lines = [line.strip().split(' ', 2)[2] for line in lines]
+
+    # Extract the speakers for each line.
+    speakers = [line.split('>')[0][1:] for line in dialog_lines]
+
+    generate_panels(dialog_lines, speakers)
+    construct_comic(dialog_lines)
 
 
 if __name__ == "__main__":
