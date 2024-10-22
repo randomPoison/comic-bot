@@ -20,6 +20,9 @@ def generate_panels(dialog_lines, speakers):
     for i in range(3):
         p = i + 1
 
+        # First prompt: Generate concise speaker description and panel layout.
+        # --------------------------------------------------------------------
+
         # Determine our speakers for this panel.
         panel_speakers = [speakers[2 * i], speakers[2 * i + 1]]
         speakers_prompt = f"""
@@ -78,23 +81,63 @@ def generate_panels(dialog_lines, speakers):
         print(f"\nPanel {p} character descriptions:")
         print(combined_description)
 
-        panel_description = f"""
-        The scene is set in a cozy living room infused with a warm afternoon
-        glow. Sunlight filters through a window, washings the space in golden
-        hues, illuminating the assorted clutter on a low coffee table in the
-        center.
+        # Second prompt: Use dialog to generate location and character actions.
+        # ---------------------------------------------------------------------
+
+        dialog = "\n".join([dialog_lines[2 * i], dialog_lines[2 * i + 1]])
+
+        system = """
+        You will be given two lines of IRC chat dialog and the description of a
+        scene containing one or two characters. The initial description of the
+        characters will be simple, just describing their appearances and their
+        positions in the frame.
+
+        Using the two lines of chat as a starting point, rewrite the scene
+        description to add an appropriate location and have the characters
+        performing some action.
+
+        Keep the generated description simple and concise, in the same style as
+        the initial description. Keep it mostly the same, amending it only with
+        a brief description of the location and what the characters are doing.
+        """
+
+        prompt = f"""
+        # Initial Scene
 
         {combined_description}
+
+        # Dialog
+
+        {dialog}
         """
+        print(f"\nPanel {p} dialog prompt:", prompt)
+
+        # TODO: Handle potential failure here.
+        completion = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {
+                    "role": "system",
+                    "content": system,
+                },
+                {
+                    "role": "user",
+                    "content": prompt,
+                },
+            ]
+        )
+
+        expanded_description = completion.choices[0].message.content
 
         # Draw the panel.
         # ---------------
-        print(f"\nFinal panel {p} prompt:\n{panel_description}")
+
+        print(f"\nFinal panel {p} prompt:\n{expanded_description}")
 
         # TODO: Handle potential failure here.
         response = client.images.generate(
             model="dall-e-3",
-            prompt=panel_description,
+            prompt=expanded_description,
             size="1024x1024",
             quality="standard",
             n=1,
