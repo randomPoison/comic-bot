@@ -34,6 +34,9 @@ def generate_panels(dialog_lines, speakers):
         explicitly placed on the left and right side of the image, with the
         first character on the left and the second character on the right.
 
+        If the same character is listed twice, they are the only speaker. Simply
+        describe that character alone in that case.
+
         Keep the generated description short and to the point. Avoid using
         superfluous descriptors, and keep character descriptions as close to
         their original descrption. Do not mention the characters' names, only
