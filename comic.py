@@ -11,7 +11,6 @@ def generate_panels(chat_script):
     client = OpenAI()
 
     # Generate the 3 panels.
-    panel_urls = []
     for p in range(1, 4):
         system = f"""
         You will be given the description of two characters. Write a short
@@ -93,14 +92,8 @@ def generate_panels(chat_script):
         print(f"\nPanel {p} URL:")
         print(image_url)
 
-        panel_urls.append(image_url)
-
-    # Download the panels.
-    for index, url in enumerate(panel_urls):
-        p = index + 1
-        response = requests.get(url)
-
-        # Save the image to a file
+        # Download the panel.
+        response = requests.get(image_url)
         file_name = f"panel_{p}.png"
         with open(file_name, "wb") as file:
             file.write(response.content)
