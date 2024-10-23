@@ -139,7 +139,7 @@ def generate_panels(dialog_lines, speakers):
         response = client.images.generate(
             model="dall-e-3",
             prompt=expanded_description,
-            size="1024x1024",
+            size="1024x1792",
             quality="standard",
             n=1,
         )
@@ -168,6 +168,12 @@ def construct_comic(dialog_lines):
     panel_1 = Image.open('panel_1.png')
     panel_2 = Image.open('panel_2.png')
     panel_3 = Image.open('panel_3.png')
+
+    # Crop the images to 1024x1024 pixels, starting at an offset from the top.
+    crop_box = (0, 200, 1024, 200 + 1024)
+    panel_1 = panel_1.crop(crop_box)
+    panel_2 = panel_2.crop(crop_box)
+    panel_3 = panel_3.crop(crop_box)
 
     # Define the dimensions of the comic.
     panel_width = 1024
