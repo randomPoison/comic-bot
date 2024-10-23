@@ -4,9 +4,10 @@ import requests
 
 
 CHARACTER_DESCRIPTIONS = {
+    "drewzar": "A small, simple grey robot with teal eyes",
     "geckomuerto": "An anthropomorphic lizard wearing a business suit and smoking a cigarette.",
-    "shadypkg": "A tall, buff, shirtless man with a cardboard box on his head.",
     "philza": "A rockstar with sunglasses and long blonde hair, holding a black and white guitar.",
+    "shadypkg": "A tall, buff, shirtless man with a cardboard box on his head.",
 }
 
 
@@ -324,12 +325,12 @@ def wrap_text(text, font, max_width, draw):
 
 def main():
     chat_script = """
-    4:06 PM <geckomuerto> gonna hafta make pasta for weeks so i can start collecting jars for paper pulp
-    4:07 PM <geckomuerto> processed four jars today
-    4:18 PM <philza> what do these things have to do with each other
-    4:18 PM <geckomuerto> sauce jars are used to hold paper and water to stir into pulp slurry! the slurry is then used to make new paper
-    4:19 PM <philza> love shady changing outfits in every panel. ai is so goooood
-    4:19 PM <philza> geckomuerto: i see, i thought you needed the jars but they were full of pasta rofl
+    11:56 AM <Drewzar> It's been like 8 years since I've logged in and touched new relic
+    11:57 AM <Drewzar> holy shit 
+    11:57 AM <Drewzar> it's sooo bad now
+    11:57 AM <Drewzar> shit fucking everywhere
+    11:57 AM <Drewzar> the UI is a nightmare of the late 90s
+    11:58 AM <Drewzar> I don't understand how people pay so much for such a shit experience
     """
 
     # Process the raw chat logs into a list of lines of dialog, stripping off
@@ -338,7 +339,7 @@ def main():
     dialog_lines = [line.strip().split(' ', 2)[2] for line in lines]
 
     # Extract the speakers for each line.
-    speakers = [line.split('>')[0][1:] for line in dialog_lines]
+    speakers = [line.split('>')[0][1:].lower() for line in dialog_lines]
 
     generate_panels(dialog_lines, speakers)
     construct_comic(dialog_lines)
