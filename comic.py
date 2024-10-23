@@ -26,13 +26,31 @@ def generate_panels(dialog_lines, speakers):
 
         # Determine our speakers for this panel.
         panel_speakers = [speakers[2 * i], speakers[2 * i + 1]]
-        speakers_prompt = f"""
-        - **{panel_speakers[0]}**: {CHARACTER_DESCRIPTIONS[panel_speakers[0]]}
 
-        - **{panel_speakers[1]}**: {CHARACTER_DESCRIPTIONS[panel_speakers[1]]}
+        one_speaker = f"""
+        You will be given the description of a. Write a short
+        description of a scene with that.
+
+        Keep the generated description short and to the point. Avoid using
+        superfluous descriptors, and keep character description as close to
+        their original description. Do not mention the characters' names, only
+        reference them by their visual descriptions.
+
+        example input:
+
+        ```
+        - **alice**: A talking toaster with a cartoon face on her side.
+        ```
+
+        example output:
+
+        ```
+        In the center of the image a large cartoon toaster with a large,
+        expressive face on her side.
+        ```
         """
 
-        system = f"""
+        two_speakers = f"""
         You will be given the description of two characters. Write a short
         description of a scene with the two characters. The characters should be
         explicitly placed on the left and right side of the image, with the
@@ -62,6 +80,18 @@ def generate_panels(dialog_lines, speakers):
         that depicts a cat. The two are engaged in a casual conversation.
         ```
         """
+
+        # Select appropriate prompt for 1 speaker vs 2 speakers.
+        if panel_speakers[0] == panel_speakers[1]:
+            system = one_speaker
+            speakers_prompt = f"""- **{panel_speakers[0]}**: {CHARACTER_DESCRIPTIONS[panel_speakers[0]]}"""
+        else:
+            system = two_speakers
+            speakers_prompt = f"""
+            - **{panel_speakers[0]}**: {CHARACTER_DESCRIPTIONS[panel_speakers[0]]}
+
+            - **{panel_speakers[1]}**: {CHARACTER_DESCRIPTIONS[panel_speakers[1]]}
+            """
 
         # TODO: Handle potential failure here.
         completion = client.chat.completions.create(
@@ -100,6 +130,7 @@ def generate_panels(dialog_lines, speakers):
         Keep the generated description simple and concise, in the same style as
         the initial description. Keep it mostly the same, amending it only with
         a brief description of the location and what the characters are doing.
+        Avoid superfluous details and do not reference characters by name.
         """
 
         prompt = f"""
