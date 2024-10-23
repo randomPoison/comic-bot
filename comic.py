@@ -140,7 +140,8 @@ def generate_panels(dialog_lines, speakers):
             model="dall-e-3",
             prompt=expanded_description,
             size="1024x1792",
-            quality="standard",
+            quality="hd",
+            style="vivid",
             n=1,
         )
 
