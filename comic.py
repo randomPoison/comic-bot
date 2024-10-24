@@ -30,19 +30,24 @@ def generate_panels(dialog_lines, speakers):
         # Generate character descriptions for our speaker(s).
         # ---------------------------------------------------
 
-        # Normalize the speaker list to remove the duplicate if the same person
-        # speaks twice.
-        unique_speakers = []
-        for speaker in panel_speakers:
-            if speaker not in unique_speakers:
-                unique_speakers.append(speaker)
+        # Create a mapping of unique speakers to their dialogs.
+        speaker_dialog_map = {}
+        for speaker, dialog in zip(panel_speakers, panel_dialog):
+            if speaker in speaker_dialog_map:
+                speaker_dialog_map[speaker].append(dialog)
+            else:
+                speaker_dialog_map[speaker] = [dialog]
 
-        # Generate a description for the speaker(s), combining their appearance
-        # with a generate description of their actions.
         speaker_descriptions = []
-        for speaker in unique_speakers:
+
+        # Loop over unique speakers and their dialogs.
+        for speaker, dialogs in speaker_dialog_map.items():
             speaker_appearance = f"{speaker} is {CHARACTER_DESCRIPTIONS[speaker]}"
 
+            # Combine the speaker's dialogs into one string.
+            combined_dialog = " ".join(dialogs)
+
+            # TODO: Generate speaker action from dialog.
             speaker_action = """
             Drewzar stands in front of a computer, his arms raised above his head in
             frustration. Drewzar's face is angry, his mouth open as he shouts in
@@ -128,7 +133,7 @@ def send_prompts(
         messages = [messages]
     elif isinstance(messages, list):
         if not all(isinstance(m, str) for m in messages):
-            raise valueerror("all items in 'messages' list must be strings.")
+            raise ValueError("all items in 'messages' list must be strings.")
     else:
         raise TypeError("'messages' must be a string or a list of strings.")
 
