@@ -189,6 +189,62 @@ def generate_panels(dialog_lines, speakers):
         print(f"Saved file to {file_name}")
 
 
+def send_prompts(
+    client: OpenAI,
+    messages: Union[str, List[str]],
+    system: Optional[str] = None,
+    model: str = "gpt-4o",
+) -> str:
+    """
+    Sends prompts to an OpenAI chat completion API and returns the response.
+
+    Args:
+        client (OpenAI): The OpenAI client instance.
+        messages (Union[str, List[str]]): A string or a list of strings representing user messages.
+        system (Optional[str], optional): Optional system message to include at the beginning. Defaults to None.
+        model (str, optional): The model name to use for generating the completion. Defaults to "gpt-4o".
+
+    Returns:
+        str: The response content from the OpenAI API.
+
+    Raises:
+        TypeError: If 'messages' is not a string or a list of strings.
+        ValueError: If 'messages' is a list but contains non-string items.
+    """
+    prompts = []
+
+    # Include the system message if provided.
+    if system:
+        prompts.append({"role": "system", "content": system})
+
+    # Normalize messages to a list of strings.
+    if isinstance(messages, str):
+        messages = [messages]
+    elif isinstance(messages, list):
+        if not all(isinstance(m, str) for m in messages):
+            raise ValueError("All items in 'messages' list must be strings.")
+    else:
+        raise TypeError("'messages' must be a string or a list of strings.")
+
+    # Add user messages to prompts.
+    prompts.extend({"role": "user", "content": m} for m in messages)
+
+    # Debug: print the prompts.
+    print("Sending prompts:", json.dumps(prompts, indent=4))
+
+    # Send the prompts to OpenAI API.
+    completion = client.chat.completions.create(
+        model=model,
+        messages=prompts
+    )
+
+    # Extract and return the response content.
+    response = completion.choices[0].message.content
+    print("Response:", response)
+
+    return response
+
+
 def construct_comic(dialog_lines):
     """
     Constructs the final comic from the generated panels and parsed chat logs.
