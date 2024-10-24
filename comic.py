@@ -8,6 +8,7 @@ import requests
 CHARACTER_DESCRIPTIONS = {
     "drewzar": "A small, simple grey robot with teal eyes.",
     "geckomuerto": "An anthropomorphic lizard wearing a business suit and smoking a cigarette.",
+    "muta_work": "An anime catboy wearing a black hoodie with a cat face on it.",
     "philza": "A rockstar with sunglasses and long blonde hair, holding a black and white guitar.",
     "shadypkg": "A tall, buff, shirtless man with a cardboard box on his head.",
 }
@@ -306,14 +307,33 @@ def wrap_text(text, font, max_width, draw):
     return "\n".join(wrapped_lines)
 
 
+def normalize_nick(nick: str) -> str:
+    """
+    Normalizes speaker nicknames to all lowercase, stripping moderator
+    identifiers, and normalizing the nick used for people who've had multiple
+    nicks.
+
+    Returns: The normalized nickname.
+    """
+
+    # Normalize names to all lowercase.
+    nick = nick.lower()
+
+    # Strip @ off the front for mods.
+    if nick.startswith("@"):
+        nick = nick[1:]
+
+    return nick
+
+
 def main():
     chat_script = """
-    11:56 AM <Drewzar> It's been like 8 years since I've logged in and touched new relic
-    11:57 AM <Drewzar> holy shit 
-    11:57 AM <Drewzar> it's sooo bad now
-    11:57 AM <Drewzar> shit fucking everywhere
-    11:57 AM <Drewzar> the UI is a nightmare of the late 90s
-    11:58 AM <Drewzar> I don't understand how people pay so much for such a shit experience
+    7:00 PM <Drewzar> I am going to be late
+    7:15 PM <@Muta_work> How many late
+    7:20 PM <Drewzar> So fucking late
+    7:20 PM <Drewzar> Just now train
+    7:28 PM <geckomuerto> philza fineee itll be fair fite. next saturday or this one??
+    7:28 PM <geckomuerto> or next thursday halloween fite
     """
 
     # Process the raw chat logs into a list of lines of dialog, stripping off
@@ -322,7 +342,8 @@ def main():
     dialog_lines = [line.strip().split(' ', 2)[2] for line in lines]
 
     # Extract the speakers for each line.
-    speakers = [line.split('>')[0][1:].lower() for line in dialog_lines]
+    speakers = [normalize_nick(line.split('>')[0][1:])
+                for line in dialog_lines]
 
     generate_panels(dialog_lines, speakers)
     construct_comic(dialog_lines)
