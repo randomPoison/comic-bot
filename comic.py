@@ -1,10 +1,12 @@
 from openai import OpenAI
 from PIL import Image, ImageDraw, ImageFont
+from typing import Union, List, Any, Optional
+import json
 import requests
 
 
 CHARACTER_DESCRIPTIONS = {
-    "drewzar": "A small, simple grey robot with teal eyes",
+    "drewzar": "A small, simple grey robot with teal eyes.",
     "geckomuerto": "An anthropomorphic lizard wearing a business suit and smoking a cigarette.",
     "philza": "A rockstar with sunglasses and long blonde hair, holding a black and white guitar.",
     "shadypkg": "A tall, buff, shirtless man with a cardboard box on his head.",
@@ -22,155 +24,35 @@ def generate_panels(dialog_lines, speakers):
     for i in range(3):
         p = i + 1
 
-        # First prompt: Generate concise speaker description and panel layout.
-        # --------------------------------------------------------------------
-
-        # Determine our speakers for this panel.
-        panel_speakers = [speakers[2 * i], speakers[2 * i + 1]]
-
-        one_speaker = f"""
-        You will be given the description of a. Write a short
-        description of a scene with that.
-
-        Keep the generated description short and to the point. Avoid using
-        superfluous descriptors, and keep character description as close to
-        their original description. Do not mention the characters' names, only
-        reference them by their visual descriptions.
-
-        example input:
-
-        ```
-        - **alice**: A talking toaster with a cartoon face on her side.
-        ```
-
-        example output:
-
-        ```
-        In the center of the image a large cartoon toaster with a large,
-        expressive face on her side.
-        ```
+        combined_description = f"""
+        Drewzar is a small grey robot with teal eyes. Drewzar stands in front of
+        a computer, his arms raised above his head in frustration. Drewzar's
+        face is angry, his mouth open as he shouts in frustration.
         """
 
-        two_speakers = f"""
-        You will be given the description of two characters. Write a short
-        description of a scene with the two characters. The characters should be
-        explicitly placed on the left and right side of the image, with the
-        first character on the left and the second character on the right.
-
-        If the same character is listed twice, they are the only speaker. Simply
-        describe that character alone in that case.
-
-        Keep the generated description short and to the point. Avoid using
-        superfluous descriptors, and keep character descriptions as close to
-        their original descrption. Do not mention the characters' names, only
-        reference them by their visual descriptions.
-
-        example input:
-
-        ```
-        - **alice**: A talking toaster with a cartoon face on her side.
-
-        - **bob**: A cat wearing a cat t-shirt.
-        ```
-
-        example output:
-
-        ```
-        On the left stands a large cartoon toaster with a large, expressive
-        face on her side. To her right sits a large black cat wearing a t-shirt
-        that depicts a cat. The two are engaged in a casual conversation.
-        ```
-        """
-
-        # Select appropriate prompt for 1 speaker vs 2 speakers.
-        if panel_speakers[0] == panel_speakers[1]:
-            system = one_speaker
-            speakers_prompt = f"""- **{panel_speakers[0]}**: {CHARACTER_DESCRIPTIONS[panel_speakers[0]]}"""
-        else:
-            system = two_speakers
-            speakers_prompt = f"""
-            - **{panel_speakers[0]}**: {CHARACTER_DESCRIPTIONS[panel_speakers[0]]}
-
-            - **{panel_speakers[1]}**: {CHARACTER_DESCRIPTIONS[panel_speakers[1]]}
-            """
-
-        # TODO: Handle potential failure here.
-        completion = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {
-                    "role": "system",
-                    "content": system,
-                },
-                {
-                    "role": "user",
-                    "content": speakers_prompt,
-                },
-            ]
-        )
-
-        combined_description = completion.choices[0].message.content
-        print(f"\nPanel {p} character descriptions:")
-        print(combined_description)
-
-        # Second prompt: Use dialog to generate location and character actions.
-        # ---------------------------------------------------------------------
-
-        dialog = "\n".join([dialog_lines[2 * i], dialog_lines[2 * i + 1]])
+        # Remove character names from panel description.
+        # ----------------------------------------------
 
         system = """
-        You will be given two lines of IRC chat dialog and the description of a
-        scene containing one or two characters. The initial description of the
-        characters will be simple, just describing their appearances and their
-        positions in the frame.
+        You will be given a few sentences describing a scene with one or two
+        characters in it, stating their appearances, expressions, and actions.
 
-        Using the two lines of chat as a starting point, rewrite the scene
-        description to add an appropriate location and have the characters
-        performing some action.
-
-        Keep the generated description simple and concise, in the same style as
-        the initial description. Keep it mostly the same, amending it only with
-        a brief description of the location and what the characters are doing.
-        Avoid superfluous details and do not reference characters by name.
+        Rewrite the scene to remove the character names and only refer to the
+        characters by description.
         """
 
-        prompt = f"""
-        # Initial Scene
-
-        {combined_description}
-
-        # Dialog
-
-        {dialog}
-        """
-        print(f"\nPanel {p} dialog prompt:", prompt)
-
-        # TODO: Handle potential failure here.
-        completion = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {
-                    "role": "system",
-                    "content": system,
-                },
-                {
-                    "role": "user",
-                    "content": prompt,
-                },
-            ]
-        )
-
-        expanded_description = completion.choices[0].message.content
+        final_description = send_prompts(
+            client, combined_description, system=system)
 
         # Draw the panel.
         # ---------------
 
-        print(f"\nFinal panel {p} prompt:\n{expanded_description}")
+        print("Final panel {p} prompt:", final_description)
 
         # TODO: Handle potential failure here.
         response = client.images.generate(
             model="dall-e-3",
-            prompt=expanded_description,
+            prompt=final_description,
             size="1024x1792",
             quality="hd",
             style="vivid",
