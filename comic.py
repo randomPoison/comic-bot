@@ -24,11 +24,35 @@ def generate_panels(dialog_lines, speakers):
     for i in range(3):
         p = i + 1
 
-        combined_description = f"""
-        Drewzar is a small grey robot with teal eyes. Drewzar stands in front of
-        a computer, his arms raised above his head in frustration. Drewzar's
-        face is angry, his mouth open as he shouts in frustration.
-        """
+        panel_speakers = [speakers[2 * i], speakers[2 * i + 1]]
+        panel_dialog = [dialog_lines[2 * i], dialog_lines[2 * i + 1]]
+
+        # Generate character descriptions for our speaker(s).
+        # ---------------------------------------------------
+
+        # Normalize the speaker list to remove the duplicate if the same person
+        # speaks twice.
+        unique_speakers = []
+        for speaker in panel_speakers:
+            if speaker not in unique_speakers:
+                unique_speakers.append(speaker)
+
+        # Generate a description for the speaker(s), combining their appearance
+        # with a generate description of their actions.
+        speaker_descriptions = []
+        for speaker in unique_speakers:
+            speaker_appearance = f"{speaker} is {CHARACTER_DESCRIPTIONS[speaker]}"
+
+            speaker_action = """
+            Drewzar stands in front of a computer, his arms raised above his head in
+            frustration. Drewzar's face is angry, his mouth open as he shouts in
+            frustration.
+            """
+
+            speaker_description = speaker_appearance + "\n" + speaker_action
+            speaker_descriptions.append(speaker_description)
+
+        combined_description = "\n\n".join(speaker_descriptions)
 
         # Remove character names from panel description.
         # ----------------------------------------------
@@ -47,7 +71,7 @@ def generate_panels(dialog_lines, speakers):
         # Draw the panel.
         # ---------------
 
-        print("Final panel {p} prompt:", final_description)
+        print(f"Final panel {p} prompt:", final_description)
 
         # TODO: Handle potential failure here.
         response = client.images.generate(
@@ -104,7 +128,7 @@ def send_prompts(
         messages = [messages]
     elif isinstance(messages, list):
         if not all(isinstance(m, str) for m in messages):
-            raise ValueError("All items in 'messages' list must be strings.")
+            raise valueerror("all items in 'messages' list must be strings.")
     else:
         raise TypeError("'messages' must be a string or a list of strings.")
 
