@@ -38,22 +38,38 @@ def generate_panels(dialog_lines, speakers):
             else:
                 speaker_dialog_map[speaker] = [dialog]
 
+        # Loop over unique speakers and their dialogs, generating a list of
+        # speaker descriptions.
         speaker_descriptions = []
-
-        # Loop over unique speakers and their dialogs.
         for speaker, dialogs in speaker_dialog_map.items():
-            speaker_appearance = f"{speaker} is {CHARACTER_DESCRIPTIONS[speaker]}"
-
             # Combine the speaker's dialogs into one string.
-            combined_dialog = " ".join(dialogs)
+            combined_dialog = "\n".join(dialogs)
 
-            # TODO: Generate speaker action from dialog.
-            speaker_action = """
-            Drewzar stands in front of a computer, his arms raised above his head in
-            frustration. Drewzar's face is angry, his mouth open as he shouts in
-            frustration.
+            system = """
+            You will be given one or two lines of dialog for a character in a
+            panel of a comic. Based on the dialog, briefly describe what the
+            character is doing in the panel. Describe both their facial
+            expression and their body language. If appropriate describe them in
+            a location that would make sense based on their dialog. Keep the
+            descriptions concise and limit it to a couple of short sentences.
+
+            Example prompt:
+            ```
+            <alice>: Today has been great, i'm having such a good time!
+            <alice>: And this cake is great!
+            ```
+
+            Example output:
+            ```
+            Alice stands in a room with party decorations, holding a slice of
+            cake. She smiles brightly, a large grin spreading across her face.
+            ```
             """
 
+            speaker_action = send_prompts(
+                client, combined_dialog, system=system)
+
+            speaker_appearance = f"{speaker} is {CHARACTER_DESCRIPTIONS[speaker]}"
             speaker_description = speaker_appearance + "\n" + speaker_action
             speaker_descriptions.append(speaker_description)
 
