@@ -2,6 +2,7 @@ from openai import OpenAI
 from PIL import Image, ImageDraw, ImageFont
 from typing import Union, List, Any, Optional
 import json
+import random
 import requests
 
 
@@ -13,6 +14,19 @@ CHARACTER_DESCRIPTIONS = {
     "shadypkg": "A tall, buff, shirtless man with a cardboard box on his head.",
 }
 
+LOCATION_DESCRIPTIONS = [
+    "A sandy beach.",
+    "A crowded office full of paper and computer monitors.",
+    "A dense forest full of large deciduous trees.",
+    "The rooftop of a tall brick building.",
+    "High in the sky amongst the clouds",
+    "A playground with rowdy children playing in the background.",
+    "Under the sea near a pod of whales.",
+    "The top of a snowy mountain.",
+    "A pizza restaurant with a wood fired oven in the background.",
+    "A greasy spoon diner with pies and coffee.",
+]
+
 
 def generate_panels(dialog_lines, speakers):
     """
@@ -20,6 +34,10 @@ def generate_panels(dialog_lines, speakers):
     """
 
     client = OpenAI()
+
+    # Decide a location for the comic.
+    location_description = random.choice(LOCATION_DESCRIPTIONS)
+    print("Location description:", location_description)
 
     # Generate the 3 panels.
     for i in range(3):
@@ -73,7 +91,7 @@ def generate_panels(dialog_lines, speakers):
             speaker_description = speaker_appearance + "\n" + speaker_action
             speaker_descriptions.append(speaker_description)
 
-        combined_description = "\n\n".join(speaker_descriptions)
+        verbose_descriptions = "\n\n".join(speaker_descriptions)
 
         # Remove character names from panel description.
         # ----------------------------------------------
@@ -86,8 +104,15 @@ def generate_panels(dialog_lines, speakers):
         characters by description.
         """
 
-        final_description = send_prompts(
-            client, combined_description, system=system)
+        simplified_descriptions = send_prompts(
+            client, verbose_descriptions, system=system)
+
+        # Append location information.
+        final_description = f"""
+        {simplified_descriptions}
+        
+        The two stand in {location_description}
+        """
 
         # Draw the panel.
         # ---------------
