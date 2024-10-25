@@ -40,7 +40,7 @@ def generate_panels(dialog_lines, speakers):
                 speaker_dialog_map[speaker] = [dialog]
 
         # Loop over unique speakers and their dialogs, generating a list of
-        # speaker descriptions.
+        # speaker descriptions (their actions and expressions in the panel).
         speaker_descriptions = []
         for speaker, dialogs in speaker_dialog_map.items():
             # Combine the speaker's dialogs into one string.
@@ -50,9 +50,8 @@ def generate_panels(dialog_lines, speakers):
             You will be given one or two lines of dialog for a character in a
             panel of a comic. Based on the dialog, briefly describe what the
             character is doing in the panel. Describe both their facial
-            expression and their body language. If appropriate describe them in
-            a location that would make sense based on their dialog. Keep the
-            descriptions concise and limit it to a couple of short sentences.
+            expression and their body language. Keep the descriptions concise
+            and limit it to a couple of short sentences.
 
             Example prompt:
             ```
@@ -62,8 +61,8 @@ def generate_panels(dialog_lines, speakers):
 
             Example output:
             ```
-            Alice stands in a room with party decorations, holding a slice of
-            cake. She smiles brightly, a large grin spreading across her face.
+            Alice holds a slice of cake on a paper plate. She smiles brightly, a
+            large grin spreading across her face.
             ```
             """
 
