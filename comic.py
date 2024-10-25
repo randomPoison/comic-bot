@@ -8,7 +8,7 @@ import requests
 CHARACTER_DESCRIPTIONS = {
     "drewzar": "A small, simple grey robot with teal eyes.",
     "geckomuerto": "An anthropomorphic lizard wearing a business suit and smoking a cigarette.",
-    "muta_work": "An anime catboy wearing a black hoodie with a cat face on it.",
+    "muta_work": "A cat wearing a black hoodie with a cat face on it.",
     "philza": "A rockstar with sunglasses and long blonde hair, holding a black and white guitar.",
     "shadypkg": "A tall, buff, shirtless man with a cardboard box on his head.",
 }
