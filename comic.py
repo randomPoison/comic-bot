@@ -9,6 +9,7 @@ import requests
 CHARACTER_DESCRIPTIONS = {
     "drewzar": "A small, simple grey robot with teal eyes.",
     "geckomuerto": "An anthropomorphic lizard wearing a business suit and smoking a cigarette.",
+    "metacentricheight": "A sub sandwich wearing a ski mask.",
     "muta_work": "A cat wearing a black hoodie with a cat face on it.",
     "philza": "A rockstar with sunglasses and long blonde hair, holding a black and white guitar.",
     "shadypkg": "A tall, buff, shirtless man with a cardboard box on his head.",
@@ -352,12 +353,12 @@ def normalize_nick(nick: str) -> str:
 
 def main():
     chat_script = """
-    7:00 PM <Drewzar> I am going to be late
-    7:15 PM <@Muta_work> How many late
-    7:20 PM <Drewzar> So fucking late
-    7:20 PM <Drewzar> Just now train
-    7:28 PM <geckomuerto> philza fineee itll be fair fite. next saturday or this one??
-    7:28 PM <geckomuerto> or next thursday halloween fite
+    11:47 AM <MetaCentricHeight> Lmao what is with #a ppl doing 100mph+ driving
+    11:47 AM <MetaCentricHeight> I got _one_ speeding ticket and that was when I crossed the California border into Oregon and a state trooper pulled me over for doing 70 in a 60 zone
+    11:48 AM <MetaCentricHeight> Said "you can't do that Cali crap in my state" to which i said "yes sir"
+    11:48 AM <philza> v oregon
+    11:48 AM <MetaCentricHeight> A little boot, as a treat
+    11:48 AM <philza> what about the boot
     """
 
     # Process the raw chat logs into a list of lines of dialog, stripping off
