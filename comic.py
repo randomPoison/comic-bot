@@ -17,7 +17,7 @@ SCRIPT = """
 
 
 CHARACTERS = {
-    "blah64": "A futuristic fighet pilot in an orange jumpsuit and helmet.",
+    "blah64": "A futuristic fighter pilot in an orange jumpsuit and helmet.",
     "drewzar": "A small, simple grey robot with teal eyes.",
     "geckomuerto": "An anthropomorphic lizard wearing a business suit and smoking a cigarette.",
     "hayt": "A tall, lanky red robot",
@@ -45,118 +45,121 @@ LOCATIONS = {
 }
 
 
-def generate_panels(dialog_lines, speakers):
+def generate_panels(client: OpenAI, dialog_lines: List[str], speakers: List[str]):
     """
     Generates 3 comic panels based on 6 IRC logs.
     """
 
-    client = OpenAI()
-
     # Decide a location for the comic.
     location = random.choice(list(LOCATIONS.keys()))
-    location_description = LOCATIONS[location]
     print("Location:", location)
 
     # Generate the 3 panels.
     for i in range(3):
-        p = i + 1
+        generate_panel(client, i, dialog_lines, speakers, location)
 
-        panel_speakers = [speakers[2 * i], speakers[2 * i + 1]]
-        panel_dialog = [dialog_lines[2 * i], dialog_lines[2 * i + 1]]
 
-        # Generate character descriptions for our speaker(s).
-        # ---------------------------------------------------
+def generate_panel(client: OpenAI, i: int, dialog_lines: List[str], speakers: List[str], location: List[str]):
+    p = i + 1
 
-        # Create a mapping of unique speakers to their dialogs.
-        speaker_dialog_map = {}
-        for speaker, dialog in zip(panel_speakers, panel_dialog):
-            if speaker in speaker_dialog_map:
-                speaker_dialog_map[speaker].append(dialog)
-            else:
-                speaker_dialog_map[speaker] = [dialog]
+    location_description = LOCATIONS[location]
 
-        # Loop over unique speakers and their dialogs, generating a list of
-        # speaker descriptions (their actions and expressions in the panel).
-        speaker_descriptions = []
-        for speaker, dialogs in speaker_dialog_map.items():
-            # Combine the speaker's dialogs into one string.
-            combined_dialog = "\n".join(dialogs)
+    panel_speakers = [speakers[2 * i], speakers[2 * i + 1]]
+    panel_dialog = [dialog_lines[2 * i], dialog_lines[2 * i + 1]]
 
-            system = """
-            You will be given one or two lines of dialog for a character in a
-            panel of a comic. Based on the dialog, briefly describe what the
-            character is doing in the panel. Describe both their facial
-            expression and their body language. Keep the descriptions concise
-            and limit it to a couple of short sentences.
+    # Generate character descriptions for our speaker(s).
+    # ---------------------------------------------------
 
-            Example prompt:
-            ```
-            <alice>: Today has been great, i'm having such a good time!
-            <alice>: And this cake is great!
-            ```
+    # Create a mapping of unique speakers to their dialogs.
+    speaker_dialog_map = {}
+    for speaker, dialog in zip(panel_speakers, panel_dialog):
+        if speaker in speaker_dialog_map:
+            speaker_dialog_map[speaker].append(dialog)
+        else:
+            speaker_dialog_map[speaker] = [dialog]
 
-            Example output:
-            ```
-            Alice holds a slice of cake on a paper plate. She smiles brightly, a
-            large grin spreading across her face.
-            ```
-            """
-
-            speaker_action = send_prompts(
-                client, combined_dialog, system=system)
-
-            speaker_appearance = f"{speaker} is {CHARACTERS[speaker]}"
-            speaker_description = speaker_appearance + "\n" + speaker_action
-            speaker_descriptions.append(speaker_description)
-
-        verbose_descriptions = "\n\n".join(speaker_descriptions)
-
-        # Remove character names from panel description.
-        # ----------------------------------------------
+    # Loop over unique speakers and their dialogs, generating a list of
+    # speaker descriptions (their actions and expressions in the panel).
+    speaker_descriptions = []
+    for speaker, dialogs in speaker_dialog_map.items():
+        # Combine the speaker's dialogs into one string.
+        combined_dialog = "\n".join(dialogs)
 
         system = """
-        You will be given a few sentences describing a scene with one or two
-        characters in it, stating their appearances, expressions, and actions.
+        You will be given one or two lines of dialog for a character in a
+        panel of a comic. Based on the dialog, briefly describe what the
+        character is doing in the panel. Describe both their facial
+        expression and their body language. Keep the descriptions concise
+        and limit it to a couple of short sentences.
 
-        Rewrite the scene to remove the character names and only refer to the
-        characters by description.
+        Example prompt:
+        ```
+        <alice>: Today has been great, i'm having such a good time!
+        <alice>: And this cake is great!
+        ```
+
+        Example output:
+        ```
+        Alice holds a slice of cake on a paper plate. She smiles brightly, a
+        large grin spreading across her face.
+        ```
         """
 
-        simplified_descriptions = send_prompts(
-            client, verbose_descriptions, system=system)
+        speaker_action = send_prompts(
+            client, combined_dialog, system=system)
 
-        # Append location information.
-        final_description = f"""
-        {simplified_descriptions}
-        
-        The two stand in {location_description}
-        """
+        speaker_appearance = f"{speaker} is {CHARACTERS[speaker]}"
+        speaker_description = speaker_appearance + "\n" + speaker_action
+        speaker_descriptions.append(speaker_description)
 
-        # Draw the panel.
-        # ---------------
+    verbose_descriptions = "\n\n".join(speaker_descriptions)
 
-        print(f"Final panel {p} prompt:", final_description)
+    # Remove character names from panel description.
+    # ----------------------------------------------
 
-        # TODO: Handle potential failure here.
-        response = client.images.generate(
-            model="dall-e-3",
-            prompt=final_description,
-            size="1024x1792",
-            quality="hd",
-            style="vivid",
-            n=1,
-        )
+    system = """
+    You will be given a few sentences describing a scene with one or two
+    characters in it, stating their appearances, expressions, and actions.
 
-        image_url = response.data[0].url
-        print(f"\nPanel {p} URL: {image_url}")
+    Rewrite the scene to remove the character names and only refer to the
+    characters by description.
+    """
 
-        # Download the panel.
-        response = requests.get(image_url)
-        file_name = f"panel_{p}.png"
-        with open(file_name, "wb") as file:
-            file.write(response.content)
+    simplified_descriptions = send_prompts(
+        client, verbose_descriptions, system=system)
 
-        print(f"Saved file to {file_name}")
+    # Append location information.
+    final_description = f"""
+    {simplified_descriptions}
+    
+    They stand in {location_description}
+    """
+
+    # Draw the panel.
+    # ---------------
+
+    print(f"Final panel {p} prompt:", final_description)
+
+    # TODO: Handle potential failure here.
+    response = client.images.generate(
+        model="dall-e-3",
+        prompt=final_description,
+        size="1024x1792",
+        quality="hd",
+        style="vivid",
+        n=1,
+    )
+
+    image_url = response.data[0].url
+    print(f"\nPanel {p} URL: {image_url}")
+
+    # Download the panel.
+    response = requests.get(image_url)
+    file_name = f"panel_{p}.png"
+    with open(file_name, "wb") as file:
+        file.write(response.content)
+
+    print(f"Saved file to {file_name}")
 
 
 def send_prompts(
@@ -378,7 +381,10 @@ def main():
     speakers = [normalize_nick(line.split('>')[0][1:])
                 for line in dialog_lines]
 
-    generate_panels(dialog_lines, speakers)
+    client = OpenAI()
+
+    # generate_panels(client, dialog_lines, speakers)
+    generate_panel(client, 0, dialog_lines, speakers, "forest")
     construct_comic(dialog_lines)
 
 
