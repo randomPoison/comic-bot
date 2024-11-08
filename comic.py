@@ -55,12 +55,12 @@ def generate_panels(client: OpenAI, dialog_lines: List[str], speakers: List[str]
     print("Location:", location)
 
     # Generate the 3 panels.
-    for i in range(3):
-        generate_panel(client, i, dialog_lines, speakers, location)
+    for p in range(1, 4):
+        generate_panel(client, p, dialog_lines, speakers, location)
 
 
-def generate_panel(client: OpenAI, i: int, dialog_lines: List[str], speakers: List[str], location: List[str]):
-    p = i + 1
+def generate_panel(client: OpenAI, p: int, dialog_lines: List[str], speakers: List[str], location: List[str]):
+    i = p - 1
 
     location_description = LOCATIONS[location]
 
@@ -384,7 +384,7 @@ def main():
     client = OpenAI()
 
     # generate_panels(client, dialog_lines, speakers)
-    generate_panel(client, 0, dialog_lines, speakers, "forest")
+    generate_panel(client, 1, dialog_lines, speakers, "forest")
     construct_comic(dialog_lines)
 
 
