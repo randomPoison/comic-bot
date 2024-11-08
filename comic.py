@@ -6,16 +6,30 @@ import random
 import requests
 
 
+SCRIPT = """
+5:07 PM <skalnik> I think it's one of those sentences like make no sense until you re-read them with the words as the right things
+5:08 PM <skalnik> like with 0 context if you'r like "oh dang Doja cat got milkshake ducked" it's fucking nonsense
+5:08 PM <Blah64> what did doja cat do?
+5:08 PM <skalnik> then if know that doja cat is a person and what milkshake duck is as a verb it makes sense
+5:08 PM <randomPoison> she got milkshake ducked
+5:08 PM <malk> yeah, i read that and went 
+"""
+
+
 CHARACTER_DESCRIPTIONS = {
+    "blah64": "A futuristic fighet pilot in an orange jumpsuit and helmet.",
     "drewzar": "A small, simple grey robot with teal eyes.",
     "geckomuerto": "An anthropomorphic lizard wearing a business suit and smoking a cigarette.",
     "hayt": "A tall, lanky red robot",
+    "malk": "A mushroom with a long grey moustache and wearing a wizard hat.",
     "metacentricheight": "A sub sandwich wearing a ski mask.",
     "muta_work": "A cat wearing a black hoodie with a cat face on it.",
     "philza": "A rockstar with sunglasses and long blonde hair, holding a black and white guitar.",
     "randompoison": "A normal cat floating in the air.",
     "shadypkg": "A tall, buff, shirtless man with a cardboard box on his head.",
+    "skalnik": "A ham with a human face on it.",
 }
+
 
 LOCATION_DESCRIPTIONS = [
     "A sandy beach.",
@@ -354,18 +368,9 @@ def normalize_nick(nick: str) -> str:
 
 
 def main():
-    chat_script = """
-    3:51 PM <geckomuerto> randomPoison: ill be on ur street in 10m
-    3:52 PM <geckomuerto> ten fish!
-    3:52 PM <randomPoison> oshit o fuck i wasn't sure if you were even coming lol
-    3:52 PM <geckomuerto> just kidding i didnt make it to oakland, but tmrw 100% 
-    3:52 PM <randomPoison> geckomuerto-- but also geckomuerto++
-    3:52 PM <@Hayt> geckomuerto is on the rise! (Karma: 4180)
-    """
-
     # Process the raw chat logs into a list of lines of dialog, stripping off
     # the time prefix from each line (assume the time format is always `hh:mm AM/PM `).
-    lines = chat_script.strip().split("\n")
+    lines = SCRIPT.strip().split("\n")
     dialog_lines = [line.strip().split(' ', 2)[2] for line in lines]
 
     # Extract the speakers for each line.
