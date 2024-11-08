@@ -34,15 +34,15 @@ CHARACTERS = {
 
 LOCATIONS = {
     "beach": "A sandy beach.",
-    "office": "A crowded office full of paper and computer monitors.",
-    "forest": "A dense forest full of large deciduous trees.",
-    "rooftop": "The rooftop of a tall brick building.",
     "clouds": "High in the sky amongst the clouds",
-    "playground": "A playground with rowdy children playing in the background.",
-    "whales": "Under the sea near a pod of whales.",
-    "mountain": "The top of a snowy mountain.",
-    "pizzeria": "A pizza restaurant with a wood fired oven in the background.",
     "diner": "A greasy spoon diner with pies and coffee.",
+    "forest": "A dense forest full of large deciduous trees.",
+    "mountain": "The top of a snowy mountain.",
+    "office": "A crowded office full of paper and computer monitors.",
+    "pizzeria": "A pizza restaurant with a wood fired oven in the background.",
+    "playground": "A playground with rowdy children playing in the background.",
+    "rooftop": "The rooftop of a tall brick building.",
+    "whales": "Under the sea near a pod of whales.",
 }
 
 
@@ -389,7 +389,8 @@ def main():
 
     if args.location:
         if not args.location in LOCATIONS:
-            print(f"Invalid location: '{args.location}'. Must be one of: {', '.join(LOCATIONS.keys())}")
+            print(
+                f"Invalid location: '{args.location}'. Must be one of: {', '.join(LOCATIONS.keys())}")
             exit(1)
         location = args.location
     else:
