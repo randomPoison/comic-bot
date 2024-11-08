@@ -1,21 +1,30 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Comic Viewer</title>
 </head>
+
 <body>
     <header>
         <h1>.aiyp</h1>
     </header>
     <main>
-        <img src="{{ url_for('static', filename='comics/comic-{0:03d}.png'.format(comic_id)) }}" alt="Comic {{ comic_id }}">
+        <img src="{{ url_for('static', filename='comics/comic-{0:03d}.png'.format(comic_id)) }}"
+            alt="Comic {{ comic_id }}">
         <nav>
             <ul style="list-style-type: none; display: flex; justify-content: space-around;">
-                <li><a href="/comic/N">&larr;</a></li>
+                {% if comic_id > 1 %}
+                    <li><a href="{{ url_for('comic', comic_id=1) }}">&larr;&larr;</a></li>
+                    <li><a href="{{ url_for('comic', comic_id=comic_id - 1) }}">&larr;</a></li>
+                {% endif %}
                 <li><a href="/archive">Archive</a></li>
                 <li><a href="/top">Top</a></li>
                 <li><a href="/random">Random</a></li>
-                <li><a href="/comic/N">&rarr;</a></li>
+                {% if comic_id < num_comics %}
+                    <li><a href="{{ url_for('comic', comic_id=comic_id + 1) }}">&rarr;</a></li>
+                    <li><a href="{{ url_for('comic', comic_id=num_comics) }}">&rarr;&rarr;</a></li>
+                {% endif %}
             </ul>
         </nav>
     </main>
@@ -23,4 +32,5 @@
         <p>made by someone</p>
     </footer>
 </body>
+
 </html>
