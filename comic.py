@@ -8,12 +8,12 @@ import requests
 
 
 SCRIPT = """
-5:07 PM <skalnik> I think it's one of those sentences like make no sense until you re-read them with the words as the right things
-5:08 PM <skalnik> like with 0 context if you'r like "oh dang Doja cat got milkshake ducked" it's fucking nonsense
-5:08 PM <Blah64> what did doja cat do?
-5:08 PM <skalnik> then if know that doja cat is a person and what milkshake duck is as a verb it makes sense
-5:08 PM <randomPoison> she got milkshake ducked
-5:08 PM <malk> yeah, i read that and went 
+4:45 PM <Drewzar> lmao Vercel built their own chatgpt
+4:45 PM <Drewzar> which just read Vercel docs back to you
+4:45 PM <Drewzar> It also lied to me on my first question
+4:46 PM <Drewzar> amazing
+4:46 PM <Drewzar> Keep shipping shit
+4:46 PM <skalnik> love it
 """
 
 
@@ -388,6 +388,9 @@ def main():
     client = OpenAI()
 
     if args.location:
+        if not args.location in LOCATIONS:
+            print(f"Invalid location: '{args.location}'. Must be one of: {', '.join(LOCATIONS.keys())}")
+            exit(1)
         location = args.location
     else:
         # Decide a location for the comic.
