@@ -1,6 +1,7 @@
 from openai import OpenAI
 from PIL import Image, ImageDraw, ImageFont
 from typing import Union, List, Optional
+import argparse
 import json
 import random
 import requests
@@ -43,20 +44,6 @@ LOCATIONS = {
     "pizzeria": "A pizza restaurant with a wood fired oven in the background.",
     "diner": "A greasy spoon diner with pies and coffee.",
 }
-
-
-def generate_panels(client: OpenAI, dialog_lines: List[str], speakers: List[str]):
-    """
-    Generates 3 comic panels based on 6 IRC logs.
-    """
-
-    # Decide a location for the comic.
-    location = random.choice(list(LOCATIONS.keys()))
-    print("Location:", location)
-
-    # Generate the 3 panels.
-    for p in range(1, 4):
-        generate_panel(client, p, dialog_lines, speakers, location)
 
 
 def generate_panel(client: OpenAI, p: int, dialog_lines: List[str], speakers: List[str], location: List[str]):
@@ -372,6 +359,23 @@ def normalize_nick(nick: str) -> str:
 
 
 def main():
+    parser = argparse.ArgumentParser(description='Generates AI slop.')
+
+    parser.add_argument(
+        '-p', '--panel',
+        type=int,
+        choices=[1, 2, 3],
+        help='A single panel to generate. Defaults to generating all three if not specified.'
+    )
+
+    parser.add_argument(
+        '-l', '--location',
+        type=str,
+        help='The location to use for the generated panel. Uses a random location if not specified.',
+    )
+
+    args = parser.parse_args()
+
     # Process the raw chat logs into a list of lines of dialog, stripping off
     # the time prefix from each line (assume the time format is always `hh:mm AM/PM `).
     lines = SCRIPT.strip().split("\n")
@@ -383,8 +387,20 @@ def main():
 
     client = OpenAI()
 
-    # generate_panels(client, dialog_lines, speakers)
-    generate_panel(client, 1, dialog_lines, speakers, "forest")
+    if args.location:
+        location = args.location
+    else:
+        # Decide a location for the comic.
+        location = random.choice(list(LOCATIONS.keys()))
+        print("Location:", location)
+
+    if args.panel:
+        generate_panel(client, args.panel, dialog_lines, speakers, location)
+    else:
+        # Generate all 3 panels.
+        for p in range(1, 4):
+            generate_panel(client, p, dialog_lines, speakers, location)
+
     construct_comic(dialog_lines)
 
 
