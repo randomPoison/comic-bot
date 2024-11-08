@@ -1,6 +1,6 @@
 from openai import OpenAI
 from PIL import Image, ImageDraw, ImageFont
-from typing import Union, List, Any, Optional
+from typing import Union, List, Optional
 import json
 import random
 import requests
@@ -16,7 +16,7 @@ SCRIPT = """
 """
 
 
-CHARACTER_DESCRIPTIONS = {
+CHARACTERS = {
     "blah64": "A futuristic fighet pilot in an orange jumpsuit and helmet.",
     "drewzar": "A small, simple grey robot with teal eyes.",
     "geckomuerto": "An anthropomorphic lizard wearing a business suit and smoking a cigarette.",
@@ -31,18 +31,18 @@ CHARACTER_DESCRIPTIONS = {
 }
 
 
-LOCATION_DESCRIPTIONS = [
-    "A sandy beach.",
-    "A crowded office full of paper and computer monitors.",
-    "A dense forest full of large deciduous trees.",
-    "The rooftop of a tall brick building.",
-    "High in the sky amongst the clouds",
-    "A playground with rowdy children playing in the background.",
-    "Under the sea near a pod of whales.",
-    "The top of a snowy mountain.",
-    "A pizza restaurant with a wood fired oven in the background.",
-    "A greasy spoon diner with pies and coffee.",
-]
+LOCATIONS = {
+    "beach": "A sandy beach.",
+    "office": "A crowded office full of paper and computer monitors.",
+    "forest": "A dense forest full of large deciduous trees.",
+    "rooftop": "The rooftop of a tall brick building.",
+    "clouds": "High in the sky amongst the clouds",
+    "playground": "A playground with rowdy children playing in the background.",
+    "whales": "Under the sea near a pod of whales.",
+    "mountain": "The top of a snowy mountain.",
+    "pizzeria": "A pizza restaurant with a wood fired oven in the background.",
+    "diner": "A greasy spoon diner with pies and coffee.",
+}
 
 
 def generate_panels(dialog_lines, speakers):
@@ -53,8 +53,9 @@ def generate_panels(dialog_lines, speakers):
     client = OpenAI()
 
     # Decide a location for the comic.
-    location_description = random.choice(LOCATION_DESCRIPTIONS)
-    print("Location description:", location_description)
+    location = random.choice(list(LOCATIONS.keys()))
+    location_description = LOCATIONS[location]
+    print("Location:", location)
 
     # Generate the 3 panels.
     for i in range(3):
@@ -104,7 +105,7 @@ def generate_panels(dialog_lines, speakers):
             speaker_action = send_prompts(
                 client, combined_dialog, system=system)
 
-            speaker_appearance = f"{speaker} is {CHARACTER_DESCRIPTIONS[speaker]}"
+            speaker_appearance = f"{speaker} is {CHARACTERS[speaker]}"
             speaker_description = speaker_appearance + "\n" + speaker_action
             speaker_descriptions.append(speaker_description)
 
