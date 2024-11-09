@@ -1,7 +1,9 @@
 from flask import Flask, render_template, redirect, url_for, abort
 from random import randrange
 
+
 app = Flask(__name__)
+
 
 # TODO: Figure this out at startup by scanning the contents of `static/comics`.
 NUM_COMICS = 11
@@ -12,9 +14,10 @@ STRIPS_PER_PAGE = 10
 """The number of strips to show per page in the archive."""
 
 
+@app.route("/")
 @app.route("/comic/")
-def comic_home():
-    return redirect(url_for("comic", page=NUM_COMICS))
+def comic_latest():
+    return render_template("comic.html.jinja", page=NUM_COMICS, num_pages=NUM_COMICS, route='comic')
 
 
 @app.route("/comic/<int:page>")
