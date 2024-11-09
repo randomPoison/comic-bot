@@ -17,8 +17,23 @@
         {% endblock %}
       </div>
       <nav>
-        {% block nav %}
-        {% endblock %}
+        <ul>
+          <li {% if page <=1 %} class="hidden" {% endif %}>
+            <a href="{{ url_for(route, page=1) }}">&larr;&larr;</a>
+          </li>
+          <li {% if page <=1 %} class="hidden" {% endif %}>
+            <a href="{{ url_for(route, page=page - 1) }}">&larr;</a>
+          </li>
+          <li><a href="/archive">Archive</a></li>
+          <li><a href="/top">Top</a></li>
+          <li><a href="/random">Random</a></li>
+          <li {% if page>= num_pages %} class="hidden"{% endif %}>
+            <a href="{{ url_for(route, page=page + 1) }}">&rarr;</a>
+          </li>
+          <li {% if page>= num_pages %} class="hidden"{% endif %}>
+            <a href="{{ url_for(route, page=num_pages) }}">&rarr;&rarr;</a>
+          </li>
+        </ul>
       </nav>
     </main>
     <footer>

@@ -12,15 +12,15 @@ STRIPS_PER_PAGE = 10
 """The number of strips to show per page in the archive."""
 
 
-@app.route("/comic/<int:comic_id>")
-def comic(comic_id: int):
-    return render_template("comic.html.jinja", comic_id=comic_id, num_comics=NUM_COMICS)
+@app.route("/comic/<int:page>")
+def comic(page: int):
+    return render_template("comic.html.jinja", page=page, num_pages=NUM_COMICS, route='comic')
 
 
 @app.route("/random")
 def random():
-    comic_id = randrange(NUM_COMICS)
-    return redirect(url_for('comic', comic_id=comic_id))
+    page = randrange(NUM_COMICS)
+    return redirect(url_for('comic', page=page))
 
 
 @app.route("/archive")
@@ -45,4 +45,4 @@ def archive(page: int):
     strips = list(range(NUM_COMICS, 0, -1))
     strips = strips[start_index:end_index]
 
-    return render_template('archive.html.jinja', strips=strips, page=page, num_pages=num_pages)
+    return render_template('archive.html.jinja', strips=strips, page=page, num_pages=num_pages, route='archive')
