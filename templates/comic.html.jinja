@@ -1,0 +1,8 @@
+{% extends "base.html.jinja" %}
+
+{% block body %}
+<div class="comic">
+  <img src="{{ url_for('static', filename='comics/comic-{0:03d}.png'.format(comic_id)) }}"
+    alt="comic {{ comic_id }}">
+</div>
+{% endblock %}

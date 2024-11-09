@@ -12,9 +12,9 @@
       <h1>.aiyp</h1>
     </header>
     <main>
-      <div class="comic">
-        <img src="{{ url_for('static', filename='comics/comic-{0:03d}.png'.format(comic_id)) }}"
-          alt="comic {{ comic_id }}">
+      <div id="body">
+        {% block body %}
+        {% endblock %}
       </div>
       <nav>
         <ul>
