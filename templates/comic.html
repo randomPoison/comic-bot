@@ -2,7 +2,8 @@
 <html>
 
 <head>
-  <title>Comic Viewer</title>
+  <title>All Your Pants v3</title>
+  <link rel="stylesheet" type="text/css" media="all" href="/static/styles.css" />
 </head>
 
 <body>
@@ -10,9 +11,11 @@
     <h1>.aiyp</h1>
   </header>
   <main>
-    <img src="{{ url_for('static', filename='comics/comic-{0:03d}.png'.format(comic_id)) }}" alt="Comic {{ comic_id }}">
+    <div class="comic">
+      <img src="{{ url_for('static', filename='comics/comic-{0:03d}.png'.format(comic_id)) }}" alt="comic {{ comic_id }}">
+    </div>
     <nav>
-      <ul style="list-style-type: none; display: flex; justify-content: space-around;">
+      <ul>
         {% if comic_id > 1 %}
           <li><a href="{{ url_for('comic', comic_id=1) }}">&larr;&larr;</a></li>
           <li><a href="{{ url_for('comic', comic_id=comic_id - 1) }}">&larr;</a></li>
