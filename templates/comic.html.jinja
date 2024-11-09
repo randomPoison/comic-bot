@@ -1,8 +1,29 @@
 {% extends "base.html.jinja" %}
 
-{% block body %}
+{% block content %}
 <div class="comic">
   <img src="{{ url_for('static', filename='comics/comic-{0:03d}.png'.format(comic_id)) }}"
     alt="comic {{ comic_id }}">
 </div>
+{% endblock %}
+
+{% block nav %}
+<ul>
+  <!-- Always include the links and conditionally apply the 'hidden' class -->
+  <li {% if comic_id <=1 %} class="hidden" {% endif %}>
+    <a href="{{ url_for('comic', comic_id=1) }}">&larr;&larr;</a>
+  </li>
+  <li {% if comic_id <=1 %} class="hidden" {% endif %}>
+    <a href="{{ url_for('comic', comic_id=comic_id - 1) }}">&larr;</a>
+  </li>
+  <li><a href="/archive">Archive</a></li>
+  <li><a href="/top">Top</a></li>
+  <li><a href="/random">Random</a></li>
+  <li {% if comic_id>= num_comics %} class="hidden"{% endif %}>
+    <a href="{{ url_for('comic', comic_id=comic_id + 1) }}">&rarr;</a>
+  </li>
+  <li {% if comic_id>= num_comics %} class="hidden"{% endif %}>
+    <a href="{{ url_for('comic', comic_id=num_comics) }}">&rarr;&rarr;</a>
+  </li>
+</ul>
 {% endblock %}

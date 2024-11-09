@@ -12,29 +12,13 @@
       <h1>.aiyp</h1>
     </header>
     <main>
-      <div id="body">
-        {% block body %}
+      <div id="content">
+        {% block content %}
         {% endblock %}
       </div>
       <nav>
-        <ul>
-          <!-- Always include the links and conditionally apply the 'hidden' class -->
-          <li {% if comic_id <=1 %} class="hidden" {% endif %}>
-            <a href="{{ url_for('comic', comic_id=1) }}">&larr;&larr;</a>
-          </li>
-          <li {% if comic_id <=1 %} class="hidden" {% endif %}>
-            <a href="{{ url_for('comic', comic_id=comic_id - 1) }}">&larr;</a>
-          </li>
-          <li><a href="/archive">Archive</a></li>
-          <li><a href="/top">Top</a></li>
-          <li><a href="/random">Random</a></li>
-          <li {% if comic_id>= num_comics %} class="hidden"{% endif %}>
-            <a href="{{ url_for('comic', comic_id=comic_id + 1) }}">&rarr;</a>
-          </li>
-          <li {% if comic_id>= num_comics %} class="hidden"{% endif %}>
-            <a href="{{ url_for('comic', comic_id=num_comics) }}">&rarr;&rarr;</a>
-          </li>
-        </ul>
+        {% block nav %}
+        {% endblock %}
       </nav>
     </main>
     <footer>
