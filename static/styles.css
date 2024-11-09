@@ -13,3 +13,14 @@ nav ul {
     display: flex;
     justify-content: space-around;
 }
+
+#ayp {
+    min-height: 100%;
+    max-width: 1120px;
+    margin: 0 auto;
+}
+
+html,
+body {
+    height: 100%;
+}

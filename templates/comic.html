@@ -7,32 +7,34 @@
 </head>
 
 <body>
-  <header>
-    <h1>.aiyp</h1>
-  </header>
-  <main>
-    <div class="comic">
-      <img src="{{ url_for('static', filename='comics/comic-{0:03d}.png'.format(comic_id)) }}" alt="comic {{ comic_id }}">
-    </div>
-    <nav>
-      <ul>
-        {% if comic_id > 1 %}
-          <li><a href="{{ url_for('comic', comic_id=1) }}">&larr;&larr;</a></li>
-          <li><a href="{{ url_for('comic', comic_id=comic_id - 1) }}">&larr;</a></li>
-        {% endif %}
-        <li><a href="/archive">Archive</a></li>
-        <li><a href="/top">Top</a></li>
-        <li><a href="/random">Random</a></li>
-        {% if comic_id < num_comics %}
-          <li><a href="{{ url_for('comic', comic_id=comic_id + 1) }}">&rarr;</a></li>
-          <li><a href="{{ url_for('comic', comic_id=num_comics) }}">&rarr;&rarr;</a></li>
-        {% endif %}
-      </ul>
-    </nav>
-  </main>
-  <footer>
-    <p>made by someone</p>
-  </footer>
+  <div id="ayp">
+    <header>
+      <h1>.aiyp</h1>
+    </header>
+    <main>
+      <div class="comic">
+        <img src="{{ url_for('static', filename='comics/comic-{0:03d}.png'.format(comic_id)) }}" alt="comic {{ comic_id }}">
+      </div>
+      <nav>
+        <ul>
+          {% if comic_id > 1 %}
+            <li><a href="{{ url_for('comic', comic_id=1) }}">&larr;&larr;</a></li>
+            <li><a href="{{ url_for('comic', comic_id=comic_id - 1) }}">&larr;</a></li>
+          {% endif %}
+          <li><a href="/archive">Archive</a></li>
+          <li><a href="/top">Top</a></li>
+          <li><a href="/random">Random</a></li>
+          {% if comic_id < num_comics %}
+            <li><a href="{{ url_for('comic', comic_id=comic_id + 1) }}">&rarr;</a></li>
+            <li><a href="{{ url_for('comic', comic_id=num_comics) }}">&rarr;&rarr;</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+    </main>
+    <footer>
+      <p>made by someone</p>
+    </footer>
+  </div>
 </body>
 
 </html>
