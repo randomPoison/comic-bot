@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, abort
 from random import randrange
 
 app = Flask(__name__)
@@ -12,8 +12,17 @@ STRIPS_PER_PAGE = 10
 """The number of strips to show per page in the archive."""
 
 
+@app.route("/comic/")
+def comic_home():
+    return redirect(url_for("comic", page=NUM_COMICS))
+
+
 @app.route("/comic/<int:page>")
 def comic(page: int):
+    # Validate the page number.
+    if page < 1 or page > NUM_COMICS:
+        abort(404)
+
     return render_template("comic.html.jinja", page=page, num_pages=NUM_COMICS, route='comic')
 
 
@@ -23,7 +32,7 @@ def random():
     return redirect(url_for('comic', page=page))
 
 
-@app.route("/archive")
+@app.route("/archive/")
 def archive_home():
     return redirect(url_for('archive', page=1))
 
@@ -35,7 +44,7 @@ def archive(page: int):
 
     # Validate the page number.
     if page < 1 or page > num_pages:
-        return []  # Or raise an exception if you prefer
+        abort(404)
 
     # Calculate start and end indices.
     start_index = (page - 1) * STRIPS_PER_PAGE
