@@ -1,9 +1,9 @@
-.comic img {
+.strip img {
     max-width: 100%;
     max-height: 100%;
 }
 
-.comic {
+.strip {
     width: 1080px;
     height: auto;
 }

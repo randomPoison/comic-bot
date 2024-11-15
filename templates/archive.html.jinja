@@ -2,9 +2,6 @@
 
 {% block content %}
   {% for strip in strips %}
-    <div class="comic">
-      <img src="{{ url_for('static', filename='comics/comic-{0:03d}.png'.format(strip)) }}"
-        alt="comic {{ strip }}">
-    </div>
+    {% include "strip.html.jinja" %}
   {% endfor %}
 {% endblock %}

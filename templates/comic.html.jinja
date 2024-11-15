@@ -1,8 +1,5 @@
 {% extends "base.html.jinja" %}
 
 {% block content %}
-<div class="comic">
-  <img src="{{ url_for('static', filename='comics/comic-{0:03d}.png'.format(page)) }}"
-    alt="comic {{ comic_id }}">
-</div>
+  {% include "strip.html.jinja" %}
 {% endblock %}
