@@ -1,5 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, abort
 from random import randrange
+import json
+import threading
 
 
 app = Flask(__name__)
@@ -13,14 +15,43 @@ NUM_COMICS = 11
 STRIPS_PER_PAGE = 10
 """The number of strips to show per page in the archive."""
 
+DATABASE_FILE = "database.json"
+'''File to load/save our "database".'''
+
+
+database_lock = threading.Lock()
+'''Lock that must be acquired before reading/writing to the "database".'''
+
+
+database = {}
+'''Our "database", i.e. a dict that we load from disk.'''
+
+
+def load_database():
+    global database
+    with database_lock:
+        try:
+            with open(DATABASE_FILE, 'r') as f:
+                database = json.load(f)
+        except FileNotFoundError:
+            database = {}  # Initialize with empty dict if file doesn't exist.
+
+
+# Why define a function when we're just going to invoke it immediately?
+load_database()
+
 
 # TODO: Make this a class I guess?
 def strip(id: int) -> dict:
     """Builds the strip dict from the comic ID."""
 
+    with database_lock:
+        likes = database['likes'].get(str(id), {}).get('likes', 0)
+
     return {
         'id': id,
         'url': url_for('static', filename='comics/comic-{0:03d}.png'.format(id)),
+        'likes': likes,
     }
 
 

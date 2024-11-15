@@ -1,0 +1,18 @@
+{
+    "likes": {
+        "1": {
+            "likes": 5,
+            "votes": [
+                "IP ADDRESS",
+                "ANOTHER ONE"
+            ]
+        },
+        "2": {
+            "likes": 5,
+            "votes": [
+                "IP ADDRESS",
+                "ANOTHER ONE"
+            ]
+        }
+    }
+}
