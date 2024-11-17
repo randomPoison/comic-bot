@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, abort
+from flask import Flask, render_template, redirect, url_for, abort, request
 from random import randrange
 import json
 import threading
@@ -108,18 +108,30 @@ def like(id: int):
     if id < 1 or id > NUM_COMICS:
         abort(404)
 
+    # Update the likes for the comic.
     with database_lock:
-        # Update the likes for the comic, inserting an entry into the likes
-        # "table" if the comic didn't have an entry.
         comic_data = database['likes'].setdefault(str(id), {})
-        likes = comic_data.get('likes', 0) + 1
-        comic_data['likes'] = likes
+        likes = comic_data.setdefault('likes', 0)
 
-        # TODO: Track URLs for votes to filter duplicates.
+        # Check the request's IP address to check for duplicate votes. We only
+        # allow one vote per so that it's at least not trivial to cast votes.
+        #
+        # NOTE: This way of getting the IP address won't work if we run the
+        # server behind a reverse proxy, because every request will have the
+        # proxy's IP. If we end up doing that, we'll have to instead look at the
+        # headers to see what the original IP was. But that approach has
+        # additional details to consider, so we're going with the simple
+        # approach to start.
+        ip = request.remote_addr
+        votes = comic_data.setdefault('votes', [])
+        if ip not in votes:
+            likes += 1
+            comic_data['likes'] = likes
+            votes.append(ip)
 
-        # Update the database on disk with the new data.
-        with open(DATABASE_FILE, 'w') as database_file:
-            json.dump(database, database_file, indent=4)
+            # Update the database on disk with the new data.
+            with open(DATABASE_FILE, 'w') as database_file:
+                json.dump(database, database_file, indent=4)
 
     return {
         'likes': likes,
