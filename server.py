@@ -100,3 +100,27 @@ def archive(page: int):
     strips = [strip(i) for i in strips]
 
     return render_template('archive.html.jinja', strips=strips, page=page, num_pages=num_pages, route='archive')
+
+
+@app.post("/like/<int:id>")
+def like(id: int):
+    # Validate the comic number.
+    if id < 1 or id > NUM_COMICS:
+        abort(404)
+
+    with database_lock:
+        # Update the likes for the comic, inserting an entry into the likes
+        # "table" if the comic didn't have an entry.
+        comic_data = database['likes'].setdefault(str(id), {})
+        likes = comic_data.get('likes', 0) + 1
+        comic_data['likes'] = likes
+
+        # TODO: Track URLs for votes to filter duplicates.
+
+        # Update the database on disk with the new data.
+        with open(DATABASE_FILE, 'w') as database_file:
+            json.dump(database, database_file, indent=4)
+
+    return {
+        'likes': likes,
+    }

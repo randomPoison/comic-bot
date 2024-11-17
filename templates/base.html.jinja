@@ -3,7 +3,7 @@
 
 <head>
   <title>All Your Pants v3</title>
-  <link rel="stylesheet" type="text/css" media="all" href="/static/styles.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 
 <body>
@@ -40,6 +40,8 @@
       <p>made by someone</p>
     </footer>
   </div>
+
+  <script src="{{ url_for('static', filename='js/likes.js') }}"></script>
 </body>
 
 </html>
