@@ -28,3 +28,19 @@ body {
 .hidden {
     visibility: hidden;
 }
+
+a {
+    font-weight: bold;
+}
+
+footer {
+    margin: 0 auto;
+}
+
+footer p {
+    text-align: center;
+}
+
+header {
+    text-align: center;
+}
