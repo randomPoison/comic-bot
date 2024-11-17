@@ -136,3 +136,29 @@ def like(id: int):
     return {
         'likes': likes,
     }
+
+@app.route("/top/")
+def top_home():
+    return redirect(url_for('top', page=1))
+
+
+@app.route("/top/<int:page>")
+def top(page: int):
+    # Calculate total pages.
+    num_pages = (NUM_COMICS + STRIPS_PER_PAGE - 1) // STRIPS_PER_PAGE
+
+    # Validate the page number.
+    if page < 1 or page > num_pages:
+        abort(404)
+
+    # Calculate start and end indices.
+    start_index = (page - 1) * STRIPS_PER_PAGE
+    end_index = page * STRIPS_PER_PAGE
+
+    # Generate the list of strips.
+    strips = list(range(NUM_COMICS, 0, -1))
+    strips = [strip(i) for i in strips]
+    strips = sorted(strips, key=lambda s: s['likes'], reverse=True)
+    strips = strips[start_index:end_index]
+
+    return render_template('archive.html.jinja', strips=strips, page=page, num_pages=num_pages, route='top')
