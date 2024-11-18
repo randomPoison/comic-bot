@@ -72,7 +72,7 @@ def comic(page: int):
 
 @app.route("/random")
 def random():
-    page = randrange(NUM_COMICS)
+    page = randrange(1, NUM_COMICS + 1)
     return redirect(url_for('comic', page=page))
 
 
