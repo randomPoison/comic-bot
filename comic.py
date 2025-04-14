@@ -12,12 +12,12 @@ import os
 COMICS_DIR = "static/comics"
 
 SCRIPT = """
-11:14 AM <MetaCentricHeight> Oh yeah skalnik the headset saga, pullers worked like a charm until i realized i needed to seat a new fork crown since i got sealed headset 
-11:15 AM <skalnik> lol I have a crown race remover too
-11:15 AM <MetaCentricHeight> Completely lucked out that the hydraulic jack arm in the garage was perfect for sliding over the steerer but my piece of shit DIY headset press did not work
-11:16 AM <MetaCentricHeight> I just booped it free with a flathead lmao 
-11:16 AM <skalnik> Ah nice
-11:17 AM <MetaCentricHeight> Gonna try buying a beefier allthread like 3/4" and some sturdier washers
+4:47 PM <missingno> eating a banh mi in GGP watching the ppl play baseball…what is this feeling I remember having? omg I’m happy ; u ;
+4:48 PM <missingno> randomPoison: did u say 6:30 for your place?
+4:49 PM <randomPoison> invite says 6pm, but feel free to show up whenever
+4:49 PM <skalnik> but the lore says randomPoison hates france, loves spain
+4:50 PM <randomPoison> i dont even hate france }:|
+4:50 PM <randomPoison> i just had more fun in spain
 """
 
 
@@ -28,6 +28,7 @@ CHARACTERS = {
     "hayt": "A tall, lanky red robot",
     "malk": "A mushroom with a long grey moustache and wearing a wizard hat.",
     "metacentricheight": "A sub sandwich wearing a ski mask.",
+    "missingno": "An ominous floating rectangle with a pixellated distortion effect.",
     "muta_work": "A cat wearing a black hoodie with a cat face on it.",
     "philza": "A rockstar with sunglasses and long blonde hair, holding a black and white guitar.",
     "randompoison": "A normal cat floating in the air.",
