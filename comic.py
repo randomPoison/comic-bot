@@ -12,12 +12,12 @@ import os
 COMICS_DIR = "static/comics"
 
 SCRIPT = """
-4:47 PM <missingno> eating a banh mi in GGP watching the ppl play baseball…what is this feeling I remember having? omg I’m happy ; u ;
-4:48 PM <missingno> randomPoison: did u say 6:30 for your place?
-4:49 PM <randomPoison> invite says 6pm, but feel free to show up whenever
-4:49 PM <skalnik> but the lore says randomPoison hates france, loves spain
-4:50 PM <randomPoison> i dont even hate france }:|
-4:50 PM <randomPoison> i just had more fun in spain
+3:38 PM <@Muta_work> shitass
+3:38 PM <@Muta_work> (this is a reference to when u shit on ur floor)
+3:38 PM <malk> wouldn't it be a refrence to when he shits with his ass?
+3:38 PM <geckomuerto> i pooped earlier
+3:39 PM <@Muta_work> the shitting on the floor created the shitass
+3:39 PM <skalnik> I watched
 """
 
 
