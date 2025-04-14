@@ -5,7 +5,11 @@ import argparse
 import json
 import random
 import requests
+import shutil
+import os
 
+# Define a constant for the comics directory path.
+COMICS_DIR = "static/comics"
 
 SCRIPT = """
 4:45 PM <Drewzar> lmao Vercel built their own chatgpt
@@ -358,6 +362,24 @@ def normalize_nick(nick: str) -> str:
     return nick
 
 
+def publish_comic():
+    """
+    Copies the generated comic_strip.png into the static/comics directory
+    and assigns it a unique name based on the number of existing comics.
+    """
+    # Assert that the comics directory exists.
+    assert os.path.exists(COMICS_DIR), f"Comics dir ({COMICS_DIR}) does not exist"
+
+    # Count existing comics to determine the new comic's name.
+    existing_comics = [f for f in os.listdir(COMICS_DIR) if f.endswith('.png')]
+    new_comic_id = len(existing_comics) + 1
+    new_comic_name = f"comic-{new_comic_id:03}.png"
+
+    # Copy the comic_strip.png to the static/comics directory.
+    shutil.copy("comic_strip.png", os.path.join(COMICS_DIR, new_comic_name))
+    print(f"Published comic as {new_comic_name}")
+
+
 def main():
     parser = argparse.ArgumentParser(description='Generates AI slop.')
 
@@ -374,11 +396,22 @@ def main():
         help='The location to use for the generated panel. Uses a random location if not specified.',
     )
 
+    parser.add_argument(
+        '--publish',
+        action='store_true',
+        help='Publish the generated comic_strip.png to the static/comics directory.'
+    )
+
     args = parser.parse_args()
+
+    if args.publish:
+        publish_comic()
+        return
 
     # Process the raw chat logs into a list of lines of dialog, stripping off
     # the time prefix from each line (assume the time format is always `hh:mm AM/PM `).
     lines = SCRIPT.strip().split("\n")
+    assert len(lines) == 6, "SCRIPT must contain exactly 6 lines of dialog."
     dialog_lines = [line.strip().split(' ', 2)[2] for line in lines]
 
     # Extract the speakers for each line.
