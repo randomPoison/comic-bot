@@ -2,13 +2,14 @@ from flask import Flask, render_template, redirect, url_for, abort, request
 from random import randrange
 import json
 import threading
+import os
 
 
 app = Flask(__name__)
 
 
-# TODO: Figure this out at startup by scanning the contents of `static/comics`.
-NUM_COMICS = 11
+# Scan the contents of `static/comics` to determine the number of comics.
+NUM_COMICS = len([f for f in os.listdir('static/comics') if f.endswith('.png')])
 """The total number of comics."""
 
 
