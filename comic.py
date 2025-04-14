@@ -12,12 +12,12 @@ import os
 COMICS_DIR = "static/comics"
 
 SCRIPT = """
-4:45 PM <Drewzar> lmao Vercel built their own chatgpt
-4:45 PM <Drewzar> which just read Vercel docs back to you
-4:45 PM <Drewzar> It also lied to me on my first question
-4:46 PM <Drewzar> amazing
-4:46 PM <Drewzar> Keep shipping shit
-4:46 PM <skalnik> love it
+11:14 AM <MetaCentricHeight> Oh yeah skalnik the headset saga, pullers worked like a charm until i realized i needed to seat a new fork crown since i got sealed headset 
+11:15 AM <skalnik> lol I have a crown race remover too
+11:15 AM <MetaCentricHeight> Completely lucked out that the hydraulic jack arm in the garage was perfect for sliding over the steerer but my piece of shit DIY headset press did not work
+11:16 AM <MetaCentricHeight> I just booped it free with a flathead lmao 
+11:16 AM <skalnik> Ah nice
+11:17 AM <MetaCentricHeight> Gonna try buying a beefier allthread like 3/4" and some sturdier washers
 """
 
 
