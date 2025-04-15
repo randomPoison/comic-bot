@@ -12,12 +12,12 @@ import os
 COMICS_DIR = "static/comics"
 
 SCRIPT = """
-3:38 PM <@Muta_work> shitass
-3:38 PM <@Muta_work> (this is a reference to when u shit on ur floor)
-3:38 PM <malk> wouldn't it be a refrence to when he shits with his ass?
-3:38 PM <geckomuerto> i pooped earlier
-3:39 PM <@Muta_work> the shitting on the floor created the shitass
-3:39 PM <skalnik> I watched
+11:14 AM <philza> real talk tho Pack In Pack Out requires an attentive audience, I'm very careful when and where I play it
+11:15 AM <geckomuerto> oh fair, youd kno your audience better than anyone
+11:16 AM <philza> not a song for a distracted audience, that's all. I assume there will be Neighborhood Association things happening around us. idfk what this is tbh
+11:16 AM <philza> i just play bass where they tell me
+11:16 AM <geckomuerto> i dunno
+11:16 AM <geckomuerto> good, slap dat bass
 """
 
 
