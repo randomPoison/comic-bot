@@ -3,22 +3,29 @@ import irc.client
 import irc.connection
 import ssl
 
+message_buffer = []
+
 def connect_to_irc(server, port, password):
     """Connect to an IRC server and print messages as they arrive."""
     def on_connect(connection, event):
-        print("Connected to the server.")
+        print(f"Connected: {event}")
 
     def on_disconnect(connection, event):
-        print("Disconnected from the server.")
+        print(f"Disconnected: {event}")
 
     def on_message(connection, event):
-        print(f"Message from {event.source}: {event.arguments[0]}")
+        print(f"Message: {event}")
+
+        if event.target == "#arrakis":
+            sender = event.source.split("!")[0]  # Extract the sender's nickname
+            message = event.arguments[0]  # Extract the message text
+            message_buffer.append({"sender": sender, "message": message})
 
     client = irc.client.Reactor()
     try:
         ssl_context = ssl.create_default_context()
         ssl_factory = irc.connection.Factory(wrapper=lambda sock: ssl_context.wrap_socket(sock, server_hostname=server))
-        connection = client.server().connect(server, port, "randomPoison", password=password, connect_factory=ssl_factory)
+        connection = client.server().connect(server, port, "luv", password=password, connect_factory=ssl_factory)
         connection.add_global_handler("welcome", on_connect)
         connection.add_global_handler("disconnect", on_disconnect)
         connection.add_global_handler("pubmsg", on_message)
