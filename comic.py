@@ -12,16 +12,17 @@ import os
 COMICS_DIR = "static/comics"
 
 SCRIPT = """
-11:14 AM <philza> real talk tho Pack In Pack Out requires an attentive audience, I'm very careful when and where I play it
-11:15 AM <geckomuerto> oh fair, youd kno your audience better than anyone
-11:16 AM <philza> not a song for a distracted audience, that's all. I assume there will be Neighborhood Association things happening around us. idfk what this is tbh
-11:16 AM <philza> i just play bass where they tell me
-11:16 AM <geckomuerto> i dunno
-11:16 AM <geckomuerto> good, slap dat bass
+12:37 PM <MetaCentricHeight> Fuck 'em
+12:44 PM <arbo> fuck historians?
+12:45 PM <arbo> are they a protected class we can be racist against? what are their slurs 
+12:46 PM <@Muta_work> hists, backlookers, booksniffers?
+12:46 PM <vilmibm> lmao
+12:47 PM <vilmibm> anachronophiles
 """
 
 
 CHARACTERS = {
+    "arbo": "A robot with a beard, dressed in a blue vest, smoking a cigarette.",
     "blah64": "A futuristic fighter pilot in an orange jumpsuit and helmet.",
     "drewzar": "A small, simple grey robot with teal eyes.",
     "geckomuerto": "An anthropomorphic lizard wearing a business suit and smoking a cigarette.",
@@ -34,6 +35,7 @@ CHARACTERS = {
     "randompoison": "A normal cat floating in the air.",
     "shadypkg": "A tall, buff, shirtless man with a cardboard box on his head.",
     "skalnik": "A ham with a human face on it.",
+    "vilmibm": "A blue woman with blue hair, wearing blue shutter glasses."
 }
 
 
