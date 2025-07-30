@@ -7,14 +7,17 @@ import random
 import requests
 import shutil
 import os
+import unicodedata
+
 
 # Define a constant for the comics directory path.
 COMICS_DIR = "static/comics"
 
+
 SCRIPT = """
 9:06 PM <cheerycherries> 👀
 9:07 PM <cheerycherries> Dang this hard
-9:07 PM <dusya> ikr and I goofed with putting A in the same wrong spot twice :( 
+9:07 PM <dusya> ikr and I goofed with putting A in the same wrong spot twice :(
 9:13 PM <cheerycherries> Omega
 9:14 PM <randomPoison> nice
 9:14 PM <dusya> cheerycherries++ omg nice
@@ -127,7 +130,7 @@ def generate_panel(client: OpenAI, p: int, dialog_lines: List[str], speakers: Li
     # Append location information.
     final_description = f"""
     {simplified_descriptions}
-    
+
     They stand in {location_description}
     """
 
@@ -251,7 +254,8 @@ def construct_comic(dialog_lines):
     # ---------------------------------
 
     # Setup comic for having text drawn into it.
-    font = ImageFont.truetype("FiraCode-Bold.ttf", 38)
+    regular_font = ImageFont.truetype("FiraCode-Bold.ttf", 38)
+    emoji_font = ImageFont.truetype("NotoEmoji.ttf", 38)
     draw = ImageDraw.Draw(comic)
 
     # Iterate over the panels and add the dialog.
@@ -260,8 +264,8 @@ def construct_comic(dialog_lines):
         second_line = dialog_lines[2 * i + 1]
 
         # Wrap lines of dialog within a max width.
-        first_line = wrap_text(first_line, font, 900, draw)
-        second_line = wrap_text(second_line, font, 900, draw)
+        first_line_wrapped = wrap_mixed_text(first_line, regular_font, emoji_font, 900, draw)
+        second_line_wrapped = wrap_mixed_text(second_line, regular_font, emoji_font, 900, draw)
 
         # Calculate anchors for the text boxes.
         left_edge = i * panel_width + padding * (i + 1)
@@ -269,37 +273,36 @@ def construct_comic(dialog_lines):
 
         # Draw the first text box (left-aligned).
         first_line_position = (left_edge, padding)
-        _, first_text_height = draw_text_box(
-            draw, first_line, font, first_line_position, padding=10
+        _, first_text_height = draw_mixed_text_box(
+            draw, first_line_wrapped, regular_font, emoji_font, first_line_position, padding=10
         )
 
         # Draw the second text box (right-aligned).
-        _, _, text_width, _ = draw.multiline_textbbox(
-            (0, 0), second_line, font=font)
+        text_width, _ = get_mixed_multiline_text_bbox(second_line_wrapped, regular_font, emoji_font, draw)
         second_line_position = (
             right_edge - text_width, first_line_position[1] + first_text_height + padding)
-        draw_text_box(
-            draw, second_line, font, second_line_position, padding=10)
+        draw_mixed_text_box(
+            draw, second_line_wrapped, regular_font, emoji_font, second_line_position, padding=10)
 
     # Downscale the image by half and save it to disk.
     comic = comic.resize((total_width // 2, total_height // 2))
     comic.save('comic_strip.png')
 
 
-def draw_text_box(draw, text, font, position, padding=0):
+def draw_mixed_text_box(draw, text_lines, regular_font, emoji_font, position, padding=0):
     """
-    Draws text on an image with a background rectangle.
+    Draws text with mixed fonts on an image with a background rectangle.
 
     :param draw: ImageDraw object.
-    :param text: The text to draw (should be already wrapped).
-    :param font: The font to use.
+    :param text_lines: List of text lines to draw.
+    :param regular_font: The regular font to use.
+    :param emoji_font: The emoji font to use.
     :param position: Tuple (x, y) for the top-left position.
     :param padding: Padding inside the rectangle.
     :return: width and height of the drawn text box (including padding)
     """
     # Calculate the text bounding box.
-    _, _, text_width, text_height = draw.multiline_textbbox(
-        (0, 0), text, font=font)
+    text_width, text_height = get_mixed_multiline_text_bbox(text_lines, regular_font, emoji_font, draw)
 
     # Adjust rectangle for padding.
     rect_start = (position[0] - padding, position[1] - padding)
@@ -308,7 +311,7 @@ def draw_text_box(draw, text, font, position, padding=0):
 
     # Draw the text box and text.
     draw.rectangle([rect_start, rect_end], fill=(255, 255, 255))
-    draw.multiline_text(position, text, font=font, fill=(0, 0, 0))
+    draw_mixed_multiline_text(draw, text_lines, regular_font, emoji_font, position, fill=(0, 0, 0))
 
     # Return the size of the text box including padding.
     total_width = text_width + 2 * padding
@@ -316,34 +319,155 @@ def draw_text_box(draw, text, font, position, padding=0):
     return total_width, total_height
 
 
-def wrap_text(text, font, max_width, draw):
+def is_emoji(char):
     """
-    Wrap text to fit within a specified width.
+    Check if a character is an emoji.
+    """
+    # Check for emoji characters using Unicode categories
+    return (
+        unicodedata.category(char) == 'So' or  # Other symbols (most emoji)
+        char in ['\u2764', '\u2665', '\u2763']  # Common heart symbols
+        or '\U0001F600' <= char <= '\U0001F64F'  # Emoticons
+        or '\U0001F300' <= char <= '\U0001F5FF'  # Misc symbols
+        or '\U0001F680' <= char <= '\U0001F6FF'  # Transport symbols
+        or '\U0001F1E0' <= char <= '\U0001F1FF'  # Regional indicators (flags)
+        or '\U00002600' <= char <= '\U000026FF'  # Misc symbols
+        or '\U00002700' <= char <= '\U000027BF'  # Dingbats
+    )
 
-    :param text: The text to be wrapped.
-    :param font: The font used to measure the text size.
-    :param max_width: The maximum width allowed for each line.
-    :param draw: The ImageDraw object used to measure text size.
-    :return: A list of wrapped lines.
+
+def split_text_by_font(text):
+    """
+    Split text into segments that need different fonts (regular text vs emoji).
+    Returns a list of tuples: (text_segment, is_emoji)
+    """
+    segments = []
+    current_segment = ""
+    current_is_emoji = None
+
+    for char in text:
+        char_is_emoji = is_emoji(char)
+
+        if current_is_emoji is None:
+            current_is_emoji = char_is_emoji
+            current_segment = char
+        elif current_is_emoji == char_is_emoji:
+            current_segment += char
+        else:
+            # Font type changed, save current segment and start new one
+            if current_segment:
+                segments.append((current_segment, current_is_emoji))
+            current_segment = char
+            current_is_emoji = char_is_emoji
+
+    # Add the last segment
+    if current_segment:
+        segments.append((current_segment, current_is_emoji))
+
+    return segments
+
+
+def get_mixed_text_bbox(text, regular_font, emoji_font, draw):
+    """
+    Calculate the bounding box for text that may contain emoji.
+    """
+    segments = split_text_by_font(text)
+    total_width = 0
+    max_height = 0
+
+    for segment_text, is_emoji in segments:
+        font = emoji_font if is_emoji else regular_font
+        bbox = draw.textbbox((0, 0), segment_text, font=font)
+        segment_width = bbox[2] - bbox[0]
+        segment_height = bbox[3] - bbox[1]
+
+        total_width += segment_width
+        max_height = max(max_height, segment_height)
+
+    return total_width, max_height
+
+
+def draw_mixed_text(draw, text, regular_font, emoji_font, position, fill=(0, 0, 0)):
+    """
+    Draw text with mixed fonts (regular text + emoji).
+    Returns the total width drawn.
+    """
+    segments = split_text_by_font(text)
+    x, y = position
+    total_width = 0
+
+    for segment_text, is_emoji in segments:
+        font = emoji_font if is_emoji else regular_font
+
+        # Draw the segment
+        draw.text((x + total_width, y), segment_text, font=font, fill=fill)
+
+        # Calculate width for positioning next segment
+        bbox = draw.textbbox((0, 0), segment_text, font=font)
+        segment_width = bbox[2] - bbox[0]
+        total_width += segment_width
+
+    return total_width
+
+
+def wrap_mixed_text(text, regular_font, emoji_font, max_width, draw):
+    """
+    Wrap text that may contain emoji to fit within a specified width.
     """
     words = text.split(' ')
     wrapped_lines = []
     current_line = ""
 
     for word in words:
-        test_line = current_line + (word + " ")
-        text_width = draw.textlength(test_line, font=font)
+        test_line = current_line + (word + " " if current_line else word + " ")
+        text_width, _ = get_mixed_text_bbox(test_line, regular_font, emoji_font, draw)
 
         if text_width <= max_width:
             current_line = test_line
         else:
-            wrapped_lines.append(current_line.strip())
+            if current_line:
+                wrapped_lines.append(current_line.strip())
             current_line = word + " "
 
     if current_line:
         wrapped_lines.append(current_line.strip())
 
-    return "\n".join(wrapped_lines)
+    return wrapped_lines
+
+
+def draw_mixed_multiline_text(draw, lines, regular_font, emoji_font, position, fill=(0, 0, 0)):
+    """
+    Draw multiple lines of text with mixed fonts.
+    Returns the total width and height.
+    """
+    x, y = position
+    max_width = 0
+    # Use the larger font size for line spacing
+    line_height = max(regular_font.size, emoji_font.size) + 5  # Add some extra spacing
+
+    for i, line in enumerate(lines):
+        line_y = y + i * line_height
+        line_width = draw_mixed_text(draw, line, regular_font, emoji_font, (x, line_y), fill)
+        max_width = max(max_width, line_width)
+
+    total_height = len(lines) * line_height
+    return max_width, total_height
+
+
+def get_mixed_multiline_text_bbox(lines, regular_font, emoji_font, draw):
+    """
+    Calculate bounding box for multiple lines of mixed text.
+    """
+    max_width = 0
+    # Use the larger font size for line spacing
+    line_height = max(regular_font.size, emoji_font.size) + 5  # Add some extra spacing
+
+    for line in lines:
+        line_width, _ = get_mixed_text_bbox(line, regular_font, emoji_font, draw)
+        max_width = max(max_width, line_width)
+
+    total_height = len(lines) * line_height
+    return max_width, total_height
 
 
 def normalize_nick(nick: str) -> str:
