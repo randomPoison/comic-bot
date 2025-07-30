@@ -221,15 +221,13 @@ def construct_comic(dialog_lines):
     # -----------------------------------------
 
     # Load images for each panel.
-    panel_1 = Image.open('panel_1.png')
-    panel_2 = Image.open('panel_2.png')
-    panel_3 = Image.open('panel_3.png')
+    panels = [Image.open('panel_1.png'), Image.open('panel_2.png'), Image.open('panel_3.png')]
 
-    # Crop the images to 1024x1024 pixels, starting at an offset from the top.
+    # Crop the images to 1024x1024 pixels if they are portrait (1024x1792).
     crop_box = (0, 200, 1024, 200 + 1024)
-    panel_1 = panel_1.crop(crop_box)
-    panel_2 = panel_2.crop(crop_box)
-    panel_3 = panel_3.crop(crop_box)
+    for index, panel in enumerate(panels):
+        if panel.size == (1024, 1792):
+            panels[index] = panel.crop(crop_box)
 
     # Define the dimensions of the comic.
     panel_width = 1024
@@ -243,7 +241,7 @@ def construct_comic(dialog_lines):
     comic = Image.new('RGB', (total_width, total_height), (255, 255, 255))
 
     # Paste the images into the new image with the appropriate padding
-    for index, panel in enumerate([panel_1, panel_2, panel_3]):
+    for index, panel in enumerate(panels):
         offset = panel_width * index + padding * (index + 1)
         comic.paste(panel, (offset, padding))
 
@@ -405,6 +403,12 @@ def main():
         help='Publish the generated comic_strip.png to the static/comics directory.'
     )
 
+    parser.add_argument(
+        '-c', '--construct-only',
+        action='store_true',
+        help='Skip panel generation and only run the comic construction step using existing panel files.'
+    )
+
     args = parser.parse_args()
 
     if args.publish:
@@ -434,12 +438,13 @@ def main():
         location = random.choice(list(LOCATIONS.keys()))
         print("Location:", location)
 
-    if args.panel:
-        generate_panel(client, args.panel, dialog_lines, speakers, location)
-    else:
-        # Generate all 3 panels.
-        for p in range(1, 4):
-            generate_panel(client, p, dialog_lines, speakers, location)
+    if not args.construct_only:
+        if args.panel:
+            generate_panel(client, args.panel, dialog_lines, speakers, location)
+        else:
+            # Generate all 3 panels.
+            for p in range(1, 4):
+                generate_panel(client, p, dialog_lines, speakers, location)
 
     construct_comic(dialog_lines)
 
