@@ -15,12 +15,12 @@ COMICS_DIR = "static/comics"
 
 
 SCRIPT = """
-9:06 PM <cheerycherries> 👀
-9:07 PM <cheerycherries> Dang this hard
-9:07 PM <dusya> ikr and I goofed with putting A in the same wrong spot twice :(
-9:13 PM <cheerycherries> Omega
-9:14 PM <randomPoison> nice
-9:14 PM <dusya> cheerycherries++ omg nice
+9:57 AM <Laura> THE TSUNAMI ADVISORY IS LIFTED FOR VENTURA, LA, ORANGE & SAN DIEGO COUNTIES IN SOCAL
+9:57 AM <Laura> DANGEROUS BEACH CONDITIONS STILL REMAIN
+9:57 AM <Laura> ADVISORY CONTINUES FOR THE REST OF THE WEST COAST
+9:57 AM <@Hayt> PLUR!
+9:57 AM <@Hayt> PUSH HOME TO PAY RESPECTS
+9:57 AM <@Hayt> I N T E R N A T I O N A L
 """
 
 
@@ -32,6 +32,7 @@ CHARACTERS = {
     "dusya": "A young boy with a shaved head and wearing a grey t-shirt, grinning excitedly.",
     "geckomuerto": "An anthropomorphic lizard wearing a business suit and smoking a cigarette.",
     "hayt": "A tall, lanky red robot",
+    "laura": "An anime schoolgirl with short yellow hair, wearing a white school uniform.",
     "malk": "A mushroom with a long grey moustache and wearing a wizard hat.",
     "metacentricheight": "A sub sandwich wearing a ski mask.",
     "missingno": "An ominous floating rectangle with a pixellated distortion effect.",
