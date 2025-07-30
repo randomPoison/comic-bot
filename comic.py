@@ -217,10 +217,16 @@ def send_prompts(
     return response
 
 
-def construct_comic(dialog_lines):
+def construct_comic(dialog_lines, rotate_panels=None):
     """
     Constructs the final comic from the generated panels and parsed chat logs.
+    
+    Args:
+        dialog_lines: List of dialog lines for the comic
+        rotate_panels: List of panel numbers (1-based) to rotate 90 degrees clockwise
     """
+    if rotate_panels is None:
+        rotate_panels = []
 
     # Combine the 3 panels into a single image.
     # -----------------------------------------
@@ -233,6 +239,11 @@ def construct_comic(dialog_lines):
     for index, panel in enumerate(panels):
         if panel.size == (1024, 1792):
             panels[index] = panel.crop(crop_box)
+    
+    # Rotate specified panels 90 degrees clockwise (after cropping).
+    for panel_number in rotate_panels:
+        panel_index = panel_number - 1  # Convert to 0-based index
+        panels[panel_index] = panels[panel_index].rotate(-90, expand=True)
 
     # Define the dimensions of the comic.
     panel_width = 1024
@@ -535,7 +546,19 @@ def main():
         help='Skip panel generation and only run the comic construction step using existing panel files.'
     )
 
+    parser.add_argument(
+        '-r', '--rotate',
+        type=int,
+        nargs='+',
+        choices=[1, 2, 3],
+        help='Panel number(s) to rotate 90 degrees clockwise. Can only be used with --construct-only.'
+    )
+
     args = parser.parse_args()
+
+    # Validate that --rotate can only be used with --construct-only
+    if args.rotate and not args.construct_only:
+        parser.error("--rotate can only be used with --construct-only")
 
     if args.publish:
         publish_comic()
@@ -572,7 +595,7 @@ def main():
             for p in range(1, 4):
                 generate_panel(client, p, dialog_lines, speakers, location)
 
-    construct_comic(dialog_lines)
+    construct_comic(dialog_lines, rotate_panels=args.rotate)
 
 
 if __name__ == "__main__":
