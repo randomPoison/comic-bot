@@ -12,12 +12,12 @@ import os
 COMICS_DIR = "static/comics"
 
 SCRIPT = """
-12:37 PM <MetaCentricHeight> Fuck 'em
-12:44 PM <arbo> fuck historians?
-12:45 PM <arbo> are they a protected class we can be racist against? what are their slurs 
-12:46 PM <@Muta_work> hists, backlookers, booksniffers?
-12:46 PM <vilmibm> lmao
-12:47 PM <vilmibm> anachronophiles
+3:53 PM <shadypkg> Keep coming over and having good times
+3:53 PM <@Muta_work> come over and I'll show u a good time
+3:53 PM <@Muta_work> (it's my penis)
+3:53 PM <@Hayt> 8===D
+3:53 PM <shadypkg> Ive made you moan before
+3:54 PM <@Muta_work> and I've seen u naked and touched ur butt and put things inside of u
 """
 
 
