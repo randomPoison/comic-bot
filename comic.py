@@ -53,7 +53,7 @@ LOCATIONS = {
 }
 
 
-def generate_panel(client: OpenAI, p: int, dialog_lines: List[str], speakers: List[str], location: List[str]):
+def generate_panel(client: OpenAI, p: int, dialog_lines: List[str], speakers: List[str], location: str):
     i = p - 1
 
     location_description = LOCATIONS[location]
