@@ -12,12 +12,12 @@ import os
 COMICS_DIR = "static/comics"
 
 SCRIPT = """
-3:53 PM <shadypkg> Keep coming over and having good times
-3:53 PM <@Muta_work> come over and I'll show u a good time
-3:53 PM <@Muta_work> (it's my penis)
-3:53 PM <@Hayt> 8===D
-3:53 PM <shadypkg> Ive made you moan before
-3:54 PM <@Muta_work> and I've seen u naked and touched ur butt and put things inside of u
+5:11 PM <MetaCentricHeight> Nurse watching me take my first walks post surgery forgot my IV was not on wheels so i just ripped out my IV
+5:12 PM <MetaCentricHeight> I was about to type out more but i think that undercuts my statement that Kaiser did right by me >>
+5:15 PM <MetaCentricHeight> The one thing they did that annoyed me and i complained was that they joked that it was my left hip to be operated on when it was my right
+5:16 PM <MetaCentricHeight> Right as the anesthesia mask was being put on and they laughed and assured me as i was chemically passing out
+5:16 PM <MetaCentricHeight> But ya know, comedy is all about timing
+5:17 PM <@Muta_work> was this the hip they then proceded to strip a bolt on lmao?
 """
 
 
