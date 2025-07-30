@@ -12,19 +12,21 @@ import os
 COMICS_DIR = "static/comics"
 
 SCRIPT = """
-5:11 PM <MetaCentricHeight> Nurse watching me take my first walks post surgery forgot my IV was not on wheels so i just ripped out my IV
-5:12 PM <MetaCentricHeight> I was about to type out more but i think that undercuts my statement that Kaiser did right by me >>
-5:15 PM <MetaCentricHeight> The one thing they did that annoyed me and i complained was that they joked that it was my left hip to be operated on when it was my right
-5:16 PM <MetaCentricHeight> Right as the anesthesia mask was being put on and they laughed and assured me as i was chemically passing out
-5:16 PM <MetaCentricHeight> But ya know, comedy is all about timing
-5:17 PM <@Muta_work> was this the hip they then proceded to strip a bolt on lmao?
+9:06 PM <cheerycherries> 👀
+9:07 PM <cheerycherries> Dang this hard
+9:07 PM <dusya> ikr and I goofed with putting A in the same wrong spot twice :( 
+9:13 PM <cheerycherries> Omega
+9:14 PM <randomPoison> nice
+9:14 PM <dusya> cheerycherries++ omg nice
 """
 
 
 CHARACTERS = {
     "arbo": "A robot with a beard, dressed in a blue vest, smoking a cigarette.",
     "blah64": "A futuristic fighter pilot in an orange jumpsuit and helmet.",
+    "cheerycherries": "A pair of cartoon cherries with connected stems, grinning happily.",
     "drewzar": "A small, simple grey robot with teal eyes.",
+    "dusya": "A young boy with a shaved head and wearing a grey t-shirt, grinning excitedly.",
     "geckomuerto": "An anthropomorphic lizard wearing a business suit and smoking a cigarette.",
     "hayt": "A tall, lanky red robot",
     "malk": "A mushroom with a long grey moustache and wearing a wizard hat.",
