@@ -2,6 +2,8 @@
 
 {% block content %}
   {% for strip in strips %}
-    {% include "strip.html.jinja" %}
+    <a href="{{ url_for('comic', page=strip.id) }}">
+      {% include "strip.html.jinja" %}
+    </a>
   {% endfor %}
 {% endblock %}
