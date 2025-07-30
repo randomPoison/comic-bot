@@ -8,13 +8,13 @@ import os
 app = Flask(__name__)
 
 
-# Scan the contents of `static/comics` to determine the number of comics.
-NUM_COMICS = len([f for f in os.listdir('static/comics') if f.endswith('.png')])
-"""The total number of comics."""
+LATEST_COMIC = 18
+"""The latest comic that should be visible on the website. Comics with higher IDs are hidden."""
 
 
 STRIPS_PER_PAGE = 10
 """The number of strips to show per page in the archive."""
+
 
 DATABASE_FILE = "database.json"
 '''File to load/save our "database".'''
@@ -59,21 +59,21 @@ def strip(id: int) -> dict:
 @app.route("/")
 @app.route("/comic/")
 def comic_latest():
-    return render_template("comic.html.jinja", strip=strip(NUM_COMICS), page=NUM_COMICS, num_pages=NUM_COMICS, route='comic')
+    return render_template("comic.html.jinja", strip=strip(LATEST_COMIC), page=LATEST_COMIC, num_pages=LATEST_COMIC, route='comic')
 
 
 @app.route("/comic/<int:page>")
 def comic(page: int):
     # Validate the page number.
-    if page < 1 or page > NUM_COMICS:
+    if page < 1 or page > LATEST_COMIC:
         abort(404)
 
-    return render_template("comic.html.jinja", strip=strip(page), page=page, num_pages=NUM_COMICS, route='comic')
+    return render_template("comic.html.jinja", strip=strip(page), page=page, num_pages=LATEST_COMIC, route='comic')
 
 
 @app.route("/random")
 def random():
-    page = randrange(1, NUM_COMICS + 1)
+    page = randrange(1, LATEST_COMIC + 1)
     return redirect(url_for('comic', page=page))
 
 
@@ -85,7 +85,7 @@ def archive_home():
 @app.route("/archive/<int:page>")
 def archive(page: int):
     # Calculate total pages.
-    num_pages = (NUM_COMICS + STRIPS_PER_PAGE - 1) // STRIPS_PER_PAGE
+    num_pages = (LATEST_COMIC + STRIPS_PER_PAGE - 1) // STRIPS_PER_PAGE
 
     # Validate the page number.
     if page < 1 or page > num_pages:
@@ -96,7 +96,7 @@ def archive(page: int):
     end_index = page * STRIPS_PER_PAGE
 
     # Generate the list of strips.
-    strips = list(range(NUM_COMICS, 0, -1))
+    strips = list(range(LATEST_COMIC, 0, -1))
     strips = strips[start_index:end_index]
     strips = [strip(i) for i in strips]
 
@@ -106,7 +106,7 @@ def archive(page: int):
 @app.post("/like/<int:id>")
 def like(id: int):
     # Validate the comic number.
-    if id < 1 or id > NUM_COMICS:
+    if id < 1 or id > LATEST_COMIC:
         abort(404)
 
     # Update the likes for the comic.
@@ -146,7 +146,7 @@ def top_home():
 @app.route("/top/<int:page>")
 def top(page: int):
     # Calculate total pages.
-    num_pages = (NUM_COMICS + STRIPS_PER_PAGE - 1) // STRIPS_PER_PAGE
+    num_pages = (LATEST_COMIC + STRIPS_PER_PAGE - 1) // STRIPS_PER_PAGE
 
     # Validate the page number.
     if page < 1 or page > num_pages:
@@ -157,7 +157,7 @@ def top(page: int):
     end_index = page * STRIPS_PER_PAGE
 
     # Generate the list of strips.
-    strips = list(range(NUM_COMICS, 0, -1))
+    strips = list(range(LATEST_COMIC, 0, -1))
     strips = [strip(i) for i in strips]
     strips = sorted(strips, key=lambda s: s['likes'], reverse=True)
     strips = strips[start_index:end_index]
