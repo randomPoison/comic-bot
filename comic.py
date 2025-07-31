@@ -15,12 +15,12 @@ COMICS_DIR = "static/comics"
 
 
 SCRIPT = """
-5:22 PM <cheerycherries> gonna lie down
-5:27 PM <dusya> oh no feel better D:
-5:29 PM <@Muta_work> don't die :O
-5:42 PM <missingno> getting a banh mi for my troubles u^u
-5:43 PM <arbo> I made a chili verde with some rice :3
-5:59 PM <randomPoison> I have acquired a shawarma owo
+1:05 PM <skalnik> > At a party, somehow feeling more and more drunk, but not drinking anything, finding it very strange. Wake up. Am in a kitchen. Want to tell someone about my dream, but the only person there is busy cleaning the coffee maker because someone keeps putting weed joint butts in it
+1:05 PM <@Hayt> haha butts
+1:05 PM <@Muta_work> sounds like u got drugged at a dream party :<
+1:05 PM <@Muta_work> u gotta be more careful around your second layer dream friends :(
+1:05 PM <skalnik> that's how u know I really got incepted
+1:05 PM <Drewzar> Where the fuck have my nail clippers gone?
 """
 
 
@@ -548,8 +548,9 @@ def main():
     parser.add_argument(
         '-p', '--panel',
         type=int,
+        nargs='+',
         choices=[1, 2, 3],
-        help='A single panel to generate. Defaults to generating all three if not specified.'
+        help='Panel number(s) to generate. Can specify multiple panels. Defaults to generating all three if not specified.'
     )
 
     parser.add_argument(
@@ -623,12 +624,9 @@ def main():
         print("Location:", location)
 
     if not args.construct_only:
-        if args.panel:
-            generate_panel(client, args.panel, dialog_lines, speakers, location)
-        else:
-            # Generate all 3 panels.
-            for p in range(1, 4):
-                generate_panel(client, p, dialog_lines, speakers, location)
+        panels_to_generate = args.panel if args.panel else [1, 2, 3]
+        for panel_id in panels_to_generate:
+            generate_panel(client, panel_id, dialog_lines, speakers, location)
 
     construct_comic(dialog_lines, rotate_panels=args.rotate, panel_shifts=args.shift)
 
