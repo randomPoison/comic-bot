@@ -222,6 +222,9 @@ def send_prompts(
     response = completion.choices[0].message.content
     print("Response:", response)
 
+    if response is None:
+        raise ValueError("OpenAI API returned empty response")
+    
     return response
 
 
@@ -243,7 +246,7 @@ def construct_comic(dialog_lines, rotate_panels=None, panel_shifts=None):
     # -----------------------------------------
 
     # Load images for each panel.
-    panels = [Image.open('panel_1.png'), Image.open('panel_2.png'), Image.open('panel_3.png')]
+    panels: List[Image.Image] = [Image.open('panel_1.png'), Image.open('panel_2.png'), Image.open('panel_3.png')]
 
     # Create a dictionary for quick lookup of panel shifts
     shift_dict = {panel_id: offset for panel_id, offset in panel_shifts}
