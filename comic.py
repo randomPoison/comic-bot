@@ -15,12 +15,12 @@ COMICS_DIR = "static/comics"
 
 
 SCRIPT = """
-9:57 AM <Laura> THE TSUNAMI ADVISORY IS LIFTED FOR VENTURA, LA, ORANGE & SAN DIEGO COUNTIES IN SOCAL
-9:57 AM <Laura> DANGEROUS BEACH CONDITIONS STILL REMAIN
-9:57 AM <Laura> ADVISORY CONTINUES FOR THE REST OF THE WEST COAST
-9:57 AM <@Hayt> PLUR!
-9:57 AM <@Hayt> PUSH HOME TO PAY RESPECTS
-9:57 AM <@Hayt> I N T E R N A T I O N A L
+5:22 PM <cheerycherries> gonna lie down
+5:27 PM <dusya> oh no feel better D:
+5:29 PM <@Muta_work> don't die :O
+5:42 PM <missingno> getting a banh mi for my troubles u^u
+5:43 PM <arbo> I made a chili verde with some rice :3
+5:59 PM <randomPoison> I have acquired a shawarma owo
 """
 
 
@@ -29,7 +29,7 @@ CHARACTERS = {
     "blah64": "A futuristic fighter pilot in an orange jumpsuit and helmet.",
     "cheerycherries": "A pair of cartoon cherries with connected stems, grinning happily.",
     "drewzar": "A small, simple grey robot with teal eyes.",
-    "dusya": "A young boy with a shaved head and wearing a grey t-shirt, grinning excitedly.",
+    "dusya": "A smiling rainbow waving a trans pride flag.",
     "geckomuerto": "An anthropomorphic lizard wearing a business suit and smoking a cigarette.",
     "hayt": "A tall, lanky red robot",
     "laura": "An anime schoolgirl with short yellow hair, wearing a white school uniform.",
@@ -38,7 +38,7 @@ CHARACTERS = {
     "missingno": "An ominous floating rectangle with a pixellated distortion effect.",
     "muta_work": "A cat wearing a black hoodie with a cat face on it.",
     "philza": "A rockstar with sunglasses and long blonde hair, holding a black and white guitar.",
-    "randompoison": "A normal cat floating in the air.",
+    "randompoison": "A normal dog floating in the air.",
     "shadypkg": "A tall, buff, shirtless man with a cardboard box on his head.",
     "skalnik": "A ham with a human face on it.",
     "vilmibm": "A blue woman with blue hair, wearing blue shutter glasses."
