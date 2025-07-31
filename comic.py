@@ -14,16 +14,6 @@ import unicodedata
 COMICS_DIR = "static/comics"
 
 
-SCRIPT = """
-1:05 PM <skalnik> > At a party, somehow feeling more and more drunk, but not drinking anything, finding it very strange. Wake up. Am in a kitchen. Want to tell someone about my dream, but the only person there is busy cleaning the coffee maker because someone keeps putting weed joint butts in it
-1:05 PM <@Hayt> haha butts
-1:05 PM <@Muta_work> sounds like u got drugged at a dream party :<
-1:05 PM <@Muta_work> u gotta be more careful around your second layer dream friends :(
-1:05 PM <skalnik> that's how u know I really got incepted
-1:05 PM <Drewzar> Where the fuck have my nail clippers gone?
-"""
-
-
 CHARACTERS = {
     "arbo": "A robot with a beard, dressed in a blue vest, smoking a cigarette.",
     "blah64": "A futuristic fighter pilot in an orange jumpsuit and helmet.",
@@ -146,17 +136,17 @@ def generate_panel(client: OpenAI, p: int, dialog_lines: List[str], speakers: Li
         try:
             print(f"Attempting to generate panel {p} (attempt {attempt}/{max_tries})")
 
-    response = client.images.generate(
-        model="dall-e-3",
-        prompt=final_description,
-        size="1024x1792",
-        quality="hd",
-        style="vivid",
-        n=1,
-    )
+            response = client.images.generate(
+                model="dall-e-3",
+                prompt=final_description,
+                size="1024x1792",
+                quality="hd",
+                style="vivid",
+                n=1,
+            )
 
-    image_url = response.data[0].url
-    print(f"\nPanel {p} URL: {image_url}")
+            image_url = response.data[0].url
+            print(f"\nPanel {p} URL: {image_url}")
             break  # Success, exit the retry loop
 
         except Exception as e:
@@ -168,12 +158,12 @@ def generate_panel(client: OpenAI, p: int, dialog_lines: List[str], speakers: Li
 
     # Download the panel.
     if image_url:
-    response = requests.get(image_url)
-    file_name = f"panel_{p}.png"
-    with open(file_name, "wb") as file:
-        file.write(response.content)
+        response = requests.get(image_url)
+        file_name = f"panel_{p}.png"
+        with open(file_name, "wb") as file:
+            file.write(response.content)
 
-    print(f"Saved file to {file_name}")
+        print(f"Saved file to {file_name}")
     else:
         raise RuntimeError(f"Failed to generate panel {p}: no image URL obtained")
 
@@ -558,6 +548,15 @@ def publish_comic():
     print(f"Published comic as {new_comic_name}")
 
 
+def load_script():
+    """Load the script content from script.txt file."""
+    try:
+        with open("script.txt", "r", encoding="utf-8") as f:
+            return f.read().strip()
+    except FileNotFoundError:
+        raise FileNotFoundError("script.txt file not found. Please create this file with the chat log content.")
+
+
 def main():
     parser = argparse.ArgumentParser(description='Generates AI slop.')
 
@@ -625,8 +624,9 @@ def main():
 
     # Process the raw chat logs into a list of lines of dialog, stripping off
     # the time prefix from each line (assume the time format is always `hh:mm AM/PM `).
-    lines = SCRIPT.strip().split("\n")
-    assert len(lines) == 6, "SCRIPT must contain exactly 6 lines of dialog."
+    script_content = load_script()
+    lines = script_content.strip().split("\n")
+    assert len(lines) == 6, "script.txt must contain exactly 6 lines of dialog."
     dialog_lines = [line.strip().split(' ', 2)[2] for line in lines]
 
     # Extract the speakers for each line.
