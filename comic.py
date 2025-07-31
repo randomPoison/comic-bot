@@ -59,7 +59,7 @@ LOCATIONS = {
 }
 
 
-def generate_panel(client: OpenAI, p: int, dialog_lines: List[str], speakers: List[str], location: str):
+def generate_panel(client: OpenAI, p: int, dialog_lines: List[str], speakers: List[str], location: str, max_tries: int = 3):
     i = p - 1
 
     location_description = LOCATIONS[location]
@@ -140,7 +140,12 @@ def generate_panel(client: OpenAI, p: int, dialog_lines: List[str], speakers: Li
 
     print(f"Final panel {p} prompt:", final_description)
 
-    # TODO: Handle potential failure here.
+    # Try to generate the image with retry logic for content policy violations
+    image_url = None
+    for attempt in range(1, max_tries + 1):
+        try:
+            print(f"Attempting to generate panel {p} (attempt {attempt}/{max_tries})")
+
     response = client.images.generate(
         model="dall-e-3",
         prompt=final_description,
@@ -152,14 +157,25 @@ def generate_panel(client: OpenAI, p: int, dialog_lines: List[str], speakers: Li
 
     image_url = response.data[0].url
     print(f"\nPanel {p} URL: {image_url}")
+            break  # Success, exit the retry loop
+
+        except Exception as e:
+            print(f"Panel {p} generation failed on attempt {attempt}/{max_tries}: {e}")
+
+            if attempt == max_tries:
+                print(f"Failed to generate panel {p} after {max_tries} attempts. Giving up.")
+                raise  # Re-raise the exception after all attempts are exhausted
 
     # Download the panel.
+    if image_url:
     response = requests.get(image_url)
     file_name = f"panel_{p}.png"
     with open(file_name, "wb") as file:
         file.write(response.content)
 
     print(f"Saved file to {file_name}")
+    else:
+        raise RuntimeError(f"Failed to generate panel {p}: no image URL obtained")
 
 
 def send_prompts(
@@ -588,6 +604,13 @@ def main():
         help='Shift a panel\'s crop position. First number is panel ID (1-3), second is offset in pixels. Positive values shift up, negative shift down. Can be used multiple times.'
     )
 
+    parser.add_argument(
+        '-m', '--max-tries',
+        type=int,
+        default=3,
+        help='Maximum number of attempts to generate each panel before giving up. Defaults to 3.'
+    )
+
     args = parser.parse_args()
 
     # Validate shift arguments
@@ -626,7 +649,7 @@ def main():
     if not args.construct_only:
         panels_to_generate = args.panel if args.panel else [1, 2, 3]
         for panel_id in panels_to_generate:
-            generate_panel(client, panel_id, dialog_lines, speakers, location)
+            generate_panel(client, panel_id, dialog_lines, speakers, location, args.max_tries)
 
     construct_comic(dialog_lines, rotate_panels=args.rotate, panel_shifts=args.shift)
 
