@@ -228,7 +228,7 @@ def send_prompts(
     return response
 
 
-def construct_comic(dialog_lines, rotate_panels=None, panel_shifts=None):
+def construct_comic(dialog_lines, rotate_panels=None, panel_shifts=None, panel_flips=None):
     """
     Constructs the final comic from the generated panels and parsed chat logs.
 
@@ -236,17 +236,37 @@ def construct_comic(dialog_lines, rotate_panels=None, panel_shifts=None):
         dialog_lines: List of dialog lines for the comic
         rotate_panels: List of panel numbers (1-based) to rotate 90 degrees clockwise
         panel_shifts: List of tuples (panel_id, offset) for shifting crop positions
+        panel_flips: List of tuples (panel_id, direction) for flipping panels ('h' or 'v')
     """
     if rotate_panels is None:
         rotate_panels = []
     if panel_shifts is None:
         panel_shifts = []
+    if panel_flips is None:
+        panel_flips = []
 
     # Combine the 3 panels into a single image.
     # -----------------------------------------
 
     # Load images for each panel.
     panels: List[Image.Image] = [Image.open('panel_1.png'), Image.open('panel_2.png'), Image.open('panel_3.png')]
+
+    # Apply flips to specified panels (before cropping and shifting).
+    # --------------------------------------------------------------
+    
+    # Create a dictionary for quick lookup of panel flips
+    flip_dict = {}
+    for panel_id, direction in panel_flips:
+        panel_id = int(panel_id)  # Convert to int in case it's a string
+        flip_dict[panel_id] = direction
+
+    # Apply flips to panels
+    for panel_id, direction in flip_dict.items():
+        panel_index = panel_id - 1  # Convert to 0-based index
+        if direction == 'h':
+            panels[panel_index] = panels[panel_index].transpose(Image.Transpose.FLIP_LEFT_RIGHT)
+        elif direction == 'v':
+            panels[panel_index] = panels[panel_index].transpose(Image.Transpose.FLIP_TOP_BOTTOM)
 
     # Create a dictionary for quick lookup of panel shifts
     shift_dict = {panel_id: offset for panel_id, offset in panel_shifts}
@@ -608,6 +628,14 @@ def main():
     )
 
     parser.add_argument(
+        '-f', '--flip',
+        nargs=2,
+        action='append',
+        metavar=('PANEL', 'DIRECTION'),
+        help='Flip a panel image. First argument is panel ID (1-3), second is direction (h for horizontal, v for vertical). Can be used multiple times.'
+    )
+
+    parser.add_argument(
         '-m', '--max-tries',
         type=int,
         default=5,
@@ -621,6 +649,19 @@ def main():
         for panel_id, offset in args.shift:
             if panel_id not in [1, 2, 3]:
                 parser.error(f"Panel ID must be 1, 2, or 3, got {panel_id}")
+
+    # Validate flip arguments
+    if args.flip:
+        for panel_id, direction in args.flip:
+            try:
+                panel_id = int(panel_id)
+                if panel_id not in [1, 2, 3]:
+                    parser.error(f"Panel ID must be 1, 2, or 3, got {panel_id}")
+            except ValueError:
+                parser.error(f"Panel ID must be a number, got {panel_id}")
+            
+            if direction not in ['h', 'v']:
+                parser.error(f"Flip direction must be 'h' (horizontal) or 'v' (vertical), got '{direction}'")
 
     if args.publish:
         publish_comic()
@@ -655,7 +696,7 @@ def main():
         for panel_id in panels_to_generate:
             generate_panel(client, panel_id, dialog_lines, speakers, location, args.max_tries)
 
-    construct_comic(dialog_lines, rotate_panels=args.rotate, panel_shifts=args.shift)
+    construct_comic(dialog_lines, rotate_panels=args.rotate, panel_shifts=args.shift, panel_flips=args.flip)
 
 
 if __name__ == "__main__":
