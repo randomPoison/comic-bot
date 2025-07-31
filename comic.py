@@ -10,8 +10,8 @@ import os
 import unicodedata
 
 
-# Define a constant for the comics directory path.
 COMICS_DIR = "static/comics"
+"""Directory where comics are published."""
 
 
 CHARACTERS = {
@@ -31,7 +31,8 @@ CHARACTERS = {
     "randompoison": "A normal dog floating in the air.",
     "shadypkg": "A tall, buff, shirtless man with a cardboard box on his head.",
     "skalnik": "A ham with a human face on it.",
-    "vilmibm": "A blue woman with blue hair, wearing blue shutter glasses."
+    "vilmibm": "A blue woman with blue hair, wearing blue shutter glasses.",
+    "zsunsetdan": "A sun with a smiling baby face.",
 }
 
 
@@ -606,7 +607,7 @@ def main():
     parser.add_argument(
         '-m', '--max-tries',
         type=int,
-        default=3,
+        default=5,
         help='Maximum number of attempts to generate each panel before giving up. Defaults to 3.'
     )
 
