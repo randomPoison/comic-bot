@@ -218,16 +218,19 @@ def send_prompts(
     return response
 
 
-def construct_comic(dialog_lines, rotate_panels=None):
+def construct_comic(dialog_lines, rotate_panels=None, panel_shifts=None):
     """
     Constructs the final comic from the generated panels and parsed chat logs.
-    
+
     Args:
         dialog_lines: List of dialog lines for the comic
         rotate_panels: List of panel numbers (1-based) to rotate 90 degrees clockwise
+        panel_shifts: List of tuples (panel_id, offset) for shifting crop positions
     """
     if rotate_panels is None:
         rotate_panels = []
+    if panel_shifts is None:
+        panel_shifts = []
 
     # Combine the 3 panels into a single image.
     # -----------------------------------------
@@ -235,12 +238,32 @@ def construct_comic(dialog_lines, rotate_panels=None):
     # Load images for each panel.
     panels = [Image.open('panel_1.png'), Image.open('panel_2.png'), Image.open('panel_3.png')]
 
+    # Create a dictionary for quick lookup of panel shifts
+    shift_dict = {panel_id: offset for panel_id, offset in panel_shifts}
+
     # Crop the images to 1024x1024 pixels if they are portrait (1024x1792).
-    crop_box = (0, 200, 1024, 200 + 1024)
+    default_crop_box = (0, 200, 1024, 200 + 1024)
     for index, panel in enumerate(panels):
         if panel.size == (1024, 1792):
+            panel_id = index + 1  # Convert to 1-based panel ID
+
+            # Check if this panel has a shift offset and apply it if so.
+            if panel_id in shift_dict:
+                shift_offset = shift_dict[panel_id]
+
+                y_start = 200 + shift_offset
+                y_end = y_start + 1024
+
+                # Clamp the crop box to stay within image bounds
+                y_start = max(0, min(y_start, 1792 - 1024))
+                y_end = y_start + 1024
+
+                crop_box = (0, y_start, 1024, y_end)
+            else:
+                crop_box = default_crop_box
+
             panels[index] = panel.crop(crop_box)
-    
+
     # Rotate specified panels 90 degrees clockwise (after cropping).
     for panel_number in rotate_panels:
         panel_index = panel_number - 1  # Convert to 0-based index
@@ -555,11 +578,22 @@ def main():
         help='Panel number(s) to rotate 90 degrees clockwise. Can only be used with --construct-only.'
     )
 
+    parser.add_argument(
+        '-s', '--shift',
+        type=int,
+        nargs=2,
+        action='append',
+        metavar=('PANEL', 'OFFSET'),
+        help='Shift a panel\'s crop position. First number is panel ID (1-3), second is offset in pixels. Positive values shift up, negative shift down. Can be used multiple times.'
+    )
+
     args = parser.parse_args()
 
-    # Validate that --rotate can only be used with --construct-only
-    if args.rotate and not args.construct_only:
-        parser.error("--rotate can only be used with --construct-only")
+    # Validate shift arguments
+    if args.shift:
+        for panel_id, offset in args.shift:
+            if panel_id not in [1, 2, 3]:
+                parser.error(f"Panel ID must be 1, 2, or 3, got {panel_id}")
 
     if args.publish:
         publish_comic()
@@ -596,7 +630,7 @@ def main():
             for p in range(1, 4):
                 generate_panel(client, p, dialog_lines, speakers, location)
 
-    construct_comic(dialog_lines, rotate_panels=args.rotate)
+    construct_comic(dialog_lines, rotate_panels=args.rotate, panel_shifts=args.shift)
 
 
 if __name__ == "__main__":
