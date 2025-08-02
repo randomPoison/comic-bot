@@ -16,7 +16,7 @@ STRIPS_PER_PAGE = 10
 """The number of strips to show per page in the archive."""
 
 
-DATABASE_FILE = "database.json"
+DATABASE_FILE = os.environ.get("DATABASE_PATH", "database.json")
 '''File to load/save our "database".'''
 
 
