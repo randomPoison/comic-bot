@@ -35,7 +35,14 @@ def load_database():
             with open(DATABASE_FILE, 'r') as f:
                 database = json.load(f)
         except FileNotFoundError:
-            database = {}  # Initialize with empty dict if file doesn't exist.
+            # Initialize with proper structure if file doesn't exist.
+            database = {'likes': {}}
+            with open(DATABASE_FILE, 'w') as f:
+                json.dump(database, f, indent=4)
+        
+        # Ensure the database has the expected structure.
+        if 'likes' not in database:
+            database['likes'] = {}
 
 
 # Why define a function when we're just going to invoke it immediately?
