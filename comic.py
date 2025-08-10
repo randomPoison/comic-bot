@@ -37,16 +37,37 @@ CHARACTERS = {
 
 
 LOCATIONS = {
+    "alley": "A dark alleyway with graffiti on the walls.",
+    "battlefield": "A battlefield with tanks and soldiers and explosions.",
     "beach": "A sandy beach.",
-    "clouds": "High in the sky amongst the clouds",
+    "blizzard": "A snowy blizzard with strong winds and snowflakes.",
+    "carnival": "A carnival with a Ferris wheel and colorful tents.",
+    "casino": "A casino with flashing lights and slot machines.",
+    "cave": "A dark cave with stalactites hanging from the ceiling.",
+    "cemetery": "A cemetery with tombstones and a full moon in the background.",
+    "clouds": "High in the sky amongst the clouds.",
+    "concert": "A concert with a band playing on stage and pyrotechnics going off.",
     "diner": "A greasy spoon diner with pies and coffee.",
+    "dungeon": "A dark dungeon with stone walls and torches.",
+    "elephant": "An elephant stands under several spotlights.",
     "forest": "A dense forest full of large deciduous trees.",
+    "heaven": "A heavenly place with clouds and angels.",
+    "hell": "A fiery hellscape with lava and demons.",
+    "jungle": "A dense jungle with tall trees and vines.",
+    "library": "A library with bookshelves and a reading area.",
     "mountain": "The top of a snowy mountain.",
     "office": "A crowded office full of paper and computer monitors.",
     "pizzeria": "A pizza restaurant with a wood fired oven in the background.",
     "playground": "A playground with rowdy children playing in the background.",
     "rooftop": "The rooftop of a tall brick building.",
+    "space": "Outer space, with stars and planets in the background.",
+    "storm": "A stormy sky with dark clouds and lightning.",
+    "tornado": "A tornado rips through a field of corn.",
+    "ufo": "A UFO hovers over a field of corn.",
+    "volcano": "A volcano erupts in the background, spewing lava and ash.",
     "whales": "Under the sea near a pod of whales.",
+    "zebra": "A herd of zebras stands in a grassy savannah.",
+    "zoo": "A zoo with various animals in the background.",
 }
 
 
