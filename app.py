@@ -8,7 +8,7 @@ import os
 app = Flask(__name__)
 
 
-LATEST_COMIC = 24
+LATEST_COMIC = 25
 """The latest comic that should be visible on the website. Comics with higher IDs are hidden."""
 
 
