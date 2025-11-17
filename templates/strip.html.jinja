@@ -1,5 +1,8 @@
 <div class="strip">
-  <img src="{{ strip.url }}"
-    alt="comic {{ strip.id }}">
+  {% if strip.yt_embed %}
+    <iframe width="483" height="859" src="{{ strip.yt_embed }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+  {% endif %}
+  <img src="{{ strip.url }}" alt="comic {{ strip.id }}">
+  <span>{{ strip.publish_date }}</span>
   <button class="like-button" data-id="{{ strip.id }}">⭐ {{ strip.likes }}</button>
 </div>
