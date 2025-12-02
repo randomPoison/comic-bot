@@ -160,7 +160,8 @@
         "id": 30,
         "file": "comic-030.png",
         "yt_embed": "https://www.youtube.com/embed/9T-N_khQ_Ac",
-        "published": false,
+        "published": true,
+        "publish_date": "2025-12-01",
         "script": "<dusya> ikr\n<dusya> I was like\n<dusya> out of all of the ideas for a tattoo sesh\n<dusya> that is not one\n<dusya> hey get super sweaty and out in the sun but also a tattoo?!\n<dusya> for speed, we can all share needles!"
     }
 ]
